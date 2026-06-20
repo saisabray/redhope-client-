@@ -35,7 +35,7 @@ export default function Navbar() {
         {/* Logo */}
         <NextLink href="/" className="flex items-center gap-2">
           <Image
-            src="/images/logo.png"
+            src="/images/logo-auth.png"
             alt="RedHope Logo"
             width={150}
             height={150}
@@ -66,14 +66,14 @@ export default function Navbar() {
         {/* Actions */}
         <div className="hidden lg:flex items-center gap-3">
           {!user ? (
-            <Button
+            <Link
               as={NextLink}
               href="/login"
               radius="full"
-              className="bg-red-500 text-white hover:bg-red-600"
+              className="bg-red-500 w-full px-4 py-2 rounded-full no-underline text-white hover:bg-red-600"
             >
               Login
-            </Button>
+            </Link>
           ) : (
             <div className="flex items-center gap-3">
               <Link

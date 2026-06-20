@@ -20,13 +20,13 @@ export default function Footer() {
 
           <div >
             <Image
-              src="/images/logo.png"
+              src="/images/logo-auth.png"
               alt="RedHope Logo"
               width={220}
               height={220}
               
             />
-            <p className="text-slate-400 text-sm leading-relaxed">
+            <p className="text-slate-400 text-sm leading-relaxed mt-4">
               RedHope is a life-saving platform that connects blood donors with
               people in urgent need. Join us and help save lives.
             </p>
