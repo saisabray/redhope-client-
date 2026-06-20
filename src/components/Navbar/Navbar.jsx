@@ -21,7 +21,6 @@ const navItems = [
   { label: "Funding", href: "/funding", auth: true },
 ];
 
-// replace this later with real auth (NextAuth / JWT)
 const user = null;
 
 export default function Navbar() {
@@ -31,21 +30,20 @@ export default function Navbar() {
   const isActive = (href) => pathname === href;
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-white/70 backdrop-blur-xl border-b border-gray-200">
+    <nav className="sticky top-0 z-50 w-full bg-slate-950/90 backdrop-blur-xl border-b border-slate-800 text-white">
       <div className="container mx-auto flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <NextLink href="/" className="flex items-center">
+        <NextLink href="/" className="flex items-center gap-2">
           <Image
             src="/images/logo.png"
-            alt="Logo"
-            width={120}
-            height={60}
-            className="rounded-full"
+            alt="RedHope Logo"
+            width={150}
+            height={150}
           />
         </NextLink>
 
-        {/* Desktop Navigation */}
-        <ul className="hidden items-center gap-8 lg:flex">
+        {/* Desktop Nav */}
+        <ul className="hidden lg:flex items-center gap-8">
           {navItems
             .filter((item) => !item.auth)
             .map((item) => (
@@ -53,10 +51,10 @@ export default function Navbar() {
                 <Link
                   as={NextLink}
                   href={item.href}
-                  className={`no-underline font-medium transition-colors hover:text-danger ${
+                  className={`no-underline font-medium transition ${
                     isActive(item.href)
-                      ? "text-danger underline decoration-red-500 underline-offset-8"
-                      : "text-foreground"
+                      ? "text-red-500"
+                      : "text-slate-300 hover:text-white"
                   }`}
                 >
                   {item.label}
@@ -65,10 +63,15 @@ export default function Navbar() {
             ))}
         </ul>
 
-        {/* Desktop Actions */}
-        <div className="hidden items-center gap-3 lg:flex">
+        {/* Actions */}
+        <div className="hidden lg:flex items-center gap-3">
           {!user ? (
-            <Button as={NextLink} href="/login" color="danger" radius="full">
+            <Button
+              as={NextLink}
+              href="/login"
+              radius="full"
+              className="bg-red-500 text-white hover:bg-red-600"
+            >
               Login
             </Button>
           ) : (
@@ -77,35 +80,33 @@ export default function Navbar() {
                 as={NextLink}
                 href="/dashboard"
                 className={`font-medium no-underline ${
-                  isActive("/dashboard") ? "text-danger" : "text-foreground"
+                  isActive("/dashboard")
+                    ? "text-red-500"
+                    : "text-slate-300 hover:text-white"
                 }`}
               >
                 Dashboard
               </Link>
 
-              {/* Avatar Dropdown */}
               <Dropdown placement="bottom-end">
                 <DropdownTrigger>
                   <Avatar
-                    src={user.image}
-                    name={user.name}
+                    src={user?.image}
+                    name={user?.name}
                     size="sm"
                     className="cursor-pointer"
                   />
                 </DropdownTrigger>
 
                 <DropdownMenu aria-label="User Menu">
-                  <DropdownItem key="dashboard" as={NextLink} href="/dashboard">
+                  <DropdownItem as={NextLink} href="/dashboard">
                     Dashboard
                   </DropdownItem>
 
                   <DropdownItem
                     key="signout"
                     color="danger"
-                    onPress={() => {
-                      console.log("Sign out clicked");
-                      // later: signOut()
-                    }}
+                    onPress={() => console.log("Sign out")}
                   >
                     Sign Out
                   </DropdownItem>
@@ -115,23 +116,21 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Button */}
         <Button
           isIconOnly
           variant="light"
-          className="lg:hidden"
-          aria-label="Toggle menu"
+          className="lg:hidden text-white"
           onPress={() => setIsMenuOpen((prev) => !prev)}
         >
-          {isMenuOpen ? <Xmark size={22} /> : <Bars />}
+          {isMenuOpen ? <Xmark /> : <Bars />}
         </Button>
       </div>
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="border-t border-gray-200 bg-white lg:hidden">
-          <div className="space-y-1 px-4 py-4">
-            {/* Nav Links */}
+        <div className="lg:hidden border-t border-slate-800 bg-slate-950 text-white">
+          <div className="px-4 py-4 space-y-2">
             {navItems
               .filter((item) => !item.auth || user)
               .map((item) => (
@@ -139,56 +138,28 @@ export default function Navbar() {
                   key={item.href}
                   as={NextLink}
                   href={item.href}
-                  className={`flex w-full py-3 font-medium no-underline ${
-                    isActive(item.href)
-                      ? "text-danger underline underline-offset-8"
-                      : "text-foreground"
-                  }`}
                   onPress={() => setIsMenuOpen(false)}
+                  className={`block py-2 ${
+                    isActive(item.href) ? "text-red-500" : "text-slate-300"
+                  }`}
                 >
                   {item.label}
                 </Link>
               ))}
 
-            <div className="mt-4 border-t border-default-200 pt-4">
+            <div className="border-t border-slate-800 pt-4 mt-4">
               {!user ? (
-                <Link
+                <Button
                   as={NextLink}
                   href="/login"
-                  color="danger"
-                  className="w-full no-underline"
+                  className="w-full bg-red-500 text-white"
                   onPress={() => setIsMenuOpen(false)}
                 >
                   Login
-                </Link>
+                </Button>
               ) : (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Avatar src={user.image} name={user.name} size="sm" />
-
-                    <div>
-                      <p className="text-sm font-semibold">{user.name}</p>
-                      <p className="text-xs text-default-500">{user.role}</p>
-                    </div>
-                  </div>
-
-                  <Link
-                    as={NextLink}
-                    href="/dashboard"
-                    className="w-full no-underline"
-                    onPress={() => setIsMenuOpen(false)}
-                  >
-                    Dashboard
-                  </Link>
-
-                  <Button
-                    color="danger"
-                    className="w-full"
-                    onPress={() => {
-                      console.log("Sign out clicked");
-                      // later: signOut()
-                    }}
-                  >
+                <div className="space-y-3">
+                  <Button className="w-full bg-red-500 text-white">
                     Sign Out
                   </Button>
                 </div>

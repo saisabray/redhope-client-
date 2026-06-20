@@ -47,7 +47,7 @@ export default function Banner() {
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               as={NextLink}
-              href="/register"
+              href="/donor/register"
               className="rounded-full no-underline bg-red-600 px-6 py-3 font-semibold text-white transition hover:bg-red-700"
             >
               Become a Donor
@@ -55,10 +55,10 @@ export default function Banner() {
 
             <Link
               as={NextLink}
-              href="/donation-requests"
+              href="/search"
               className="rounded-full no-underline bg-white/10 px-6 py-3 font-semibold text-white transition hover:bg-white/20 focus:outline-none focus:ring-0"
             >
-              View Requests
+              Search Donors
             </Link>
           </div>
         </div>

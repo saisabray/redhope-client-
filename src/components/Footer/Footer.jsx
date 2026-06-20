@@ -13,7 +13,7 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="bg-slate-950 text-white mt-20 ">
+    <footer className="bg-slate-950 text-white">
       <div className="container mx-auto px-6 py-16 ">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
           {/* Logo Section */}
