@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Button,
   Card,
@@ -12,18 +13,35 @@ import {
 } from "@heroui/react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 const LoginPage = () => {
-  const onSubmit = (e) => {
+  const router = useRouter();
+  const [error, setError] = useState("");
+
+  const onSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     const formData = new FormData(e.target);
-    const data = Object.fromEntries(formData.entries());
+    const email = formData.get("email");
+    const password = formData.get("password");
 
-    console.log("Form Data:", data);
+    const { data, error: signInError } = await authClient.signIn.email({
+      email,
+      password,
+    });
 
-    alert("Form submitted successfully!");
+    if (signInError) {
+      setError(signInError.message || "Invalid email or password");
+      return;
+    }
+
+    router.push("/");
+    router.refresh();
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-900 ">
@@ -38,6 +56,9 @@ const LoginPage = () => {
         <h1 className="text-center text-2xl text-slate-300 font-semibold mb-4">
           Log In
         </h1>
+        {error && (
+          <p className="text-red-400 text-center text-sm mb-2">{error}</p>
+        )}
         <Form className="flex w-96 mx-auto flex-col gap-4" onSubmit={onSubmit}>
           <TextField
             name="email"
@@ -58,21 +79,9 @@ const LoginPage = () => {
           </TextField>
 
           <TextField
-            minLength={6}
+            isRequired
             name="password"
             type="password"
-            validate={(value) => {
-              if (value.length < 6) {
-                return "Password must be at least 6 characters";
-              }
-              if (!/[A-Z]/.test(value)) {
-                return "Must contain uppercase letter";
-              }
-              if (!/[a-z]/.test(value)) {
-                return "Must contain lowercase letter";
-              }
-              return null;
-            }}
           >
             <Label className="text-slate-300">Password</Label>
             <Input

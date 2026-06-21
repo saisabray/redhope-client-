@@ -8,12 +8,10 @@ import {
   Button,
   Link,
   Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
 } from "@heroui/react";
 import { Bars, Xmark } from "@gravity-ui/icons";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useSession, signOut } from "@/lib/auth-client";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -21,13 +19,20 @@ const navItems = [
   { label: "Funding", href: "/funding", auth: true },
 ];
 
-const user = null;
-
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-
+  const router = useRouter();
+  const { data: session, isPending } = useSession();
+  const user = session?.user;
+  console.log(user);
   const isActive = (href) => pathname === href;
+
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/");
+    router.refresh();
+  };
 
   return (
     <nav className="sticky top-0 z-50 w-full bg-slate-950/90 backdrop-blur-xl border-b border-slate-800 text-white">
@@ -45,7 +50,7 @@ export default function Navbar() {
         {/* Desktop Nav */}
         <ul className="hidden lg:flex items-center gap-8">
           {navItems
-            .filter((item) => !item.auth)
+            .filter((item) => !item.auth || user)
             .map((item) => (
               <li key={item.href}>
                 <Link
@@ -75,44 +80,41 @@ export default function Navbar() {
               Login
             </Link>
           ) : (
-            <div className="flex items-center gap-3">
-              <Link
-                as={NextLink}
-                href="/dashboard"
-                className={`font-medium no-underline ${
-                  isActive("/dashboard")
-                    ? "text-red-500"
-                    : "text-slate-300 hover:text-white"
-                }`}
-              >
-                Dashboard
-              </Link>
-
-              <Dropdown placement="bottom-end">
-                <DropdownTrigger>
+              <Dropdown>
+                <Dropdown.Trigger>
                   <Avatar
-                    src={user?.image}
-                    name={user?.name}
-                    size="sm"
-                    className="cursor-pointer"
-                  />
-                </DropdownTrigger>
+                   className="cursor-pointer ring-2 ring-red-500"
+                >
+                        <Avatar.Image
+                         src={user?.image}
+                         alt={user?.name}
+                       />
+                        <Avatar.Fallback>
+                            {user?.name?.[0]?.toUpperCase()}
+                        </Avatar.Fallback>
+                </Avatar>
+                </Dropdown.Trigger>
 
-                <DropdownMenu aria-label="User Menu">
-                  <DropdownItem as={NextLink} href="/dashboard">
-                    Dashboard
-                  </DropdownItem>
+                <Dropdown.Popover className="min-w-44 rounded-xl bg-slate-900 border border-slate-700 shadow-xl shadow-black/40 p-1">
+                  <Dropdown.Menu className="bg-transparent">
+                    <Dropdown.Item
+                      as={NextLink}
+                      href="/dashboard"
+                      className="text-slate-200 hover:bg-slate-800 hover:text-white rounded-lg px-3 py-2"
+                    >
+                      Dashboard
+                    </Dropdown.Item>
 
-                  <DropdownItem
-                    key="signout"
-                    color="danger"
-                    onPress={() => console.log("Sign out")}
-                  >
-                    Sign Out
-                  </DropdownItem>
-                </DropdownMenu>
+                    <Dropdown.Item
+                      key="signout"
+                      onAction={handleSignOut}
+                      className="text-red-400 hover:bg-slate-800 hover:text-red-300 rounded-lg px-3 py-2"
+                    >
+                      Sign Out
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown.Popover>
               </Dropdown>
-            </div>
           )}
         </div>
 
@@ -159,7 +161,13 @@ export default function Navbar() {
                 </Button>
               ) : (
                 <div className="space-y-3">
-                  <Button className="w-full bg-red-500 text-white">
+                  <Button
+                    className="w-full bg-red-500 text-white"
+                    onPress={() => {
+                      setIsMenuOpen(false);
+                      handleSignOut();
+                    }}
+                  >
                     Sign Out
                   </Button>
                 </div>
