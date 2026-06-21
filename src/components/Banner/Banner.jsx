@@ -3,8 +3,12 @@
 import Image from "next/image";
 import NextLink from "next/link";
 import { Link } from "@heroui/react";
+import { authClient } from "@/lib/auth-client";
 
 export default function Banner() {
+
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
       {/* Background */}
@@ -47,7 +51,7 @@ export default function Banner() {
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
               as={NextLink}
-              href="/donor/register"
+              href={user ? "/dashboard/donor" : "/signup"}
               className="rounded-full no-underline bg-red-600 px-6 py-3 font-semibold text-white transition hover:bg-red-700"
             >
               Become a Donor

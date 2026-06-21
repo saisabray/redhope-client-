@@ -15,22 +15,27 @@ export const auth = betterAuth({
       bloodGroup: {
         type: "string",
         required: false,
+        returned: true,
       },
       district: {
         type: "string",
         required: false,
+        returned: true,
       },
       upazila: {
         type: "string",
         required: false,
+        returned: true,
       },
       role: {
         type: "string",
         defaultValue: "donor",
+        returned: true,
       },
       status: {
         type: "string",
         defaultValue: "active",
+        returned: true,
       },
     },
   },

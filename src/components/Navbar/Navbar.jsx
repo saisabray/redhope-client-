@@ -11,7 +11,7 @@ import {
 } from "@heroui/react";
 import { Bars, Xmark } from "@gravity-ui/icons";
 import { usePathname, useRouter } from "next/navigation";
-import { useSession, signOut } from "@/lib/auth-client";
+import { authClient, signOut } from "@/lib/auth-client";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -23,10 +23,12 @@ export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const { data: session, isPending } = useSession();
+  const { data: session } = authClient.useSession();
   const user = session?.user;
-  console.log(user);
   const isActive = (href) => pathname === href;
+  const dashboardHref = user?.role ? `/dashboard/${user.role}` : "/dashboard";
+
+  if (pathname?.startsWith("/dashboard")) return null;
 
   const handleSignOut = async () => {
     await signOut();
@@ -99,7 +101,7 @@ export default function Navbar() {
                   <Dropdown.Menu className="bg-transparent">
                     <Dropdown.Item
                       as={NextLink}
-                      href="/dashboard"
+                      href={dashboardHref}
                       className="text-slate-200 hover:bg-slate-800 hover:text-white rounded-lg px-3 py-2"
                     >
                       Dashboard
@@ -151,14 +153,14 @@ export default function Navbar() {
 
             <div className="border-t border-slate-800 pt-4 mt-4">
               {!user ? (
-                <Button
+                <Link
                   as={NextLink}
                   href="/login"
                   className="w-full bg-red-500 text-white"
                   onPress={() => setIsMenuOpen(false)}
                 >
                   Login
-                </Button>
+                </Link>
               ) : (
                 <div className="space-y-3">
                   <Button
