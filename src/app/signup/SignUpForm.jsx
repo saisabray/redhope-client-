@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Check } from "@gravity-ui/icons";
+
 import {
   Button,
   Card,
@@ -15,15 +15,19 @@ import {
   TextField,
   ListBox,
 } from "@heroui/react";
+
 import Image from "next/image";
 import Link from "next/link";
-import { imageUpload } from "@/lib/imageupload";
+import { Check } from "@gravity-ui/icons";
 
+import { imageUpload } from "@/lib/imageupload";
 import { authClient } from "@/lib/auth-client";
+
 const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
-const SignUpForm = ({ districts, upazilas }) => {
+export default function SignUpForm({ districts = [], upazilas = [] }) {
   const router = useRouter();
+
   const [selectedDistrict, setSelectedDistrict] = useState("");
   const [filteredUpazilas, setFilteredUpazilas] = useState([]);
   const [blood, setBlood] = useState("");
@@ -34,25 +38,32 @@ const SignUpForm = ({ districts, upazilas }) => {
 
   const selectClass = "bg-slate-950 border border-slate-800 text-slate-100";
 
-  const handleDistrictChange = (districtName) => {
+  // ✅ District change
+  const handleDistrictChange = (value) => {
+    const districtName = Array.isArray(value) ? [...value][0] : value;
+
     setSelectedDistrict(districtName);
     setUpazila("");
 
     const district = districts.find((d) => d.name === districtName);
-    const result = upazilas.filter(
-      (item) => item.district_id === String(district?.id),
+
+    const filtered = upazilas.filter(
+      (u) => String(u.district_id) === String(district?.id),
     );
 
-    setFilteredUpazilas(result);
+    setFilteredUpazilas(filtered);
   };
 
+  // ✅ Submit form
   const onSubmit = async (e) => {
     e.preventDefault();
 
     try {
       const formData = new FormData(e.target);
       const imageFile = formData.get("image");
+
       const image = await imageUpload(imageFile);
+
       const userData = {
         name: formData.get("name"),
         image: image.url,
@@ -70,10 +81,11 @@ const SignUpForm = ({ districts, upazilas }) => {
         alert("Passwords do not match");
         return;
       }
-      const { data, error } = await authClient.signUp.email({
-        ...userData,
-      });
+
+      const { error } = await authClient.signUp.email(userData);
+
       if (error) {
+        alert("Signup failed");
         return;
       }
 
@@ -82,29 +94,29 @@ const SignUpForm = ({ districts, upazilas }) => {
       setSelectedDistrict("");
       setUpazila("");
       setFilteredUpazilas([]);
-      router.push("/");
 
-    } catch (error) {
-      console.error("Signup error:", error);
+      router.push("/");
+    } catch (err) {
+      console.error(err);
     }
   };
 
-
   return (
-    <Card className="shadow-md mx-auto w-screen sm:w-125 py-10 mt-10 bg-slate-800 text-white">
+    <Card className="mx-auto w-full sm:w-[420px] py-10 mt-10 bg-slate-800 text-white">
+      {/* Logo */}
       <Image
         src="/images/logo-auth.png"
-        alt="RedHope Logo"
-        width={250}
-        height={100}
+        alt="Logo"
+        width={200}
+        height={80}
         className="mx-auto"
       />
 
-      <h1 className="mb-6 text-center text-2xl font-semibold text-slate-300">
+      <h1 className="text-center text-2xl font-semibold text-slate-300 mb-6">
         Sign Up
       </h1>
 
-      <Form className="flex w-96 mx-auto flex-col gap-4" onSubmit={onSubmit}>
+      <Form className="flex flex-col gap-4 px-6" onSubmit={onSubmit}>
         {/* NAME */}
         <TextField isRequired name="name">
           <Label className="text-slate-300">Full Name</Label>
@@ -124,13 +136,11 @@ const SignUpForm = ({ districts, upazilas }) => {
         </div>
 
         {/* BLOOD GROUP */}
-        <Select onChange={(key) => setBlood(key)}>
+        <Select onChange={(v) => setBlood(Array.from(v)[0])}>
           <Label className="text-slate-300">Blood Group</Label>
-
           <Select.Trigger className={selectClass}>
             <Select.Value placeholder="Select blood group" />
           </Select.Trigger>
-
           <Select.Popover>
             <ListBox>
               {bloodGroups.map((b) => (
@@ -143,18 +153,16 @@ const SignUpForm = ({ districts, upazilas }) => {
         </Select>
 
         {/* DISTRICT */}
-        <Select onChange={(key) => handleDistrictChange(key)}>
+        <Select onChange={handleDistrictChange}>
           <Label className="text-slate-300">District</Label>
-
           <Select.Trigger className={selectClass}>
             <Select.Value placeholder="Select district" />
           </Select.Trigger>
-
           <Select.Popover>
             <ListBox>
-              {districts.map((district) => (
-                <ListBox.Item key={district.id} id={district.name}>
-                  {district.name}
+              {districts.map((d) => (
+                <ListBox.Item key={d.id} id={d.name}>
+                  {d.name}
                 </ListBox.Item>
               ))}
             </ListBox>
@@ -163,15 +171,13 @@ const SignUpForm = ({ districts, upazilas }) => {
 
         {/* UPAZILA */}
         <Select
-          onChange={(key) => setUpazila(key)}
+          onChange={(v) => setUpazila(Array.from(v)[0])}
           isDisabled={!selectedDistrict}
         >
           <Label className="text-slate-300">Upazila</Label>
-
           <Select.Trigger className={selectClass}>
             <Select.Value placeholder="Select upazila" />
           </Select.Trigger>
-
           <Select.Popover>
             <ListBox>
               {filteredUpazilas.map((u) => (
@@ -194,8 +200,7 @@ const SignUpForm = ({ districts, upazilas }) => {
         <TextField isRequired name="password" type="password">
           <Label className="text-slate-300">Password</Label>
           <Input className={inputClass} placeholder="Enter password" />
-          <Description>Min 6 chars</Description>
-          <FieldError />
+          <Description>Min 6 characters</Description>
         </TextField>
 
         {/* CONFIRM PASSWORD */}
@@ -217,7 +222,8 @@ const SignUpForm = ({ districts, upazilas }) => {
         </div>
       </Form>
 
-      <div className="text-center mt-4 text-sm text-slate-300 pb-4">
+      {/* LOGIN LINK */}
+      <div className="text-center mt-4 text-sm text-slate-300">
         Already have an account?{" "}
         <Link href="/login" className="text-blue-500 hover:underline">
           Log in
@@ -225,6 +231,4 @@ const SignUpForm = ({ districts, upazilas }) => {
       </div>
     </Card>
   );
-};
-
-export default SignUpForm;
+}
