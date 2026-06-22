@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { getDistricts, getUpazilas } from "@/lib/Api/district";
 import {
   User, Mail, MapPin, MapPinned, Building2, Droplets,
   CalendarDays, Clock, MessageSquare, Send, AlertTriangle,
-  CheckCircle2, Home,
+  CheckCircle2, Home, Pencil,
 } from "lucide-react";
 
 // ── Static data ──────────────────────────────────────────────────────────────
@@ -98,6 +99,10 @@ function SelectWrap({ children, disabled }) {
 
 export default function CreateDonationRequestPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams.get("edit"); // present when editing
+  const isEditMode = !!editId;
+
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
 
@@ -121,6 +126,7 @@ export default function CreateDonationRequestPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [loadingEdit, setLoadingEdit] = useState(isEditMode);
 
   // Fetch districts & upazilas
   useEffect(() => {
@@ -133,6 +139,34 @@ export default function CreateDonationRequestPage() {
       })
       .catch(() => {});
   }, []);
+
+  // Pre-fill form when editing (runs after districts/upazilas are loaded)
+  useEffect(() => {
+    if (!editId || !districts.length || !upazilas.length) return;
+    setLoadingEdit(true);
+    fetch(`${BASE_URL}/donation-requests/${editId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        setRecipientName(data.recipientName ?? "");
+        setBloodGroup(data.bloodGroup ?? "");
+        setHospitalName(data.hospitalName ?? "");
+        setFullAddress(data.fullAddress ?? "");
+        setDonationDate(data.donationDate ?? "");
+        setDonationTime(data.donationTime ?? "");
+        setRequestMessage(data.requestMessage ?? "");
+        // Set district and filter upazilas
+        const districtName = data.recipientDistrict ?? "";
+        setRecipientDistrict(districtName);
+        const found = districts.find((d) => d.name === districtName);
+        if (found) {
+          const filtered = upazilas.filter((u) => String(u.district_id) === String(found.id));
+          setFilteredUpazilas(filtered);
+        }
+        setRecipientUpazila(data.recipientUpazila ?? "");
+      })
+      .catch(() => setError("Failed to load request data."))
+      .finally(() => setLoadingEdit(false));
+  }, [editId, districts, upazilas]);
 
   // Filter upazilas when district changes
   const handleDistrictChange = (e) => {
@@ -147,7 +181,7 @@ export default function CreateDonationRequestPage() {
     }
   };
 
-  // Submit handler
+  // Submit handler (create or update)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -162,8 +196,6 @@ export default function CreateDonationRequestPage() {
     setSubmitting(true);
     try {
       const payload = {
-        requesterName: user.name,
-        requesterEmail: user.email,
         recipientName: recipientName.trim(),
         recipientDistrict,
         recipientUpazila,
@@ -173,20 +205,32 @@ export default function CreateDonationRequestPage() {
         donationDate,
         donationTime,
         requestMessage: requestMessage.trim(),
-        status: "pending",
-        requesterId: user.id,
-        createdAt: new Date().toISOString(),
       };
 
-      const res = await fetch(`${BASE_URL}/donation-requests`, {
-        method: "POST",
+      const url = isEditMode
+        ? `${BASE_URL}/donation-requests/${editId}`
+        : `${BASE_URL}/donation-requests`;
+
+      const method = isEditMode ? "PATCH" : "POST";
+
+      if (!isEditMode) {
+        // Only set these on creation
+        payload.requesterName  = user.name;
+        payload.requesterEmail = user.email;
+        payload.requesterId    = user.id;
+        payload.status         = "pending";
+        payload.createdAt      = new Date().toISOString();
+      }
+
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data?.message || "Failed to create donation request.");
+        throw new Error(data?.message || (isEditMode ? "Failed to update request." : "Failed to create request."));
       }
 
       setSuccess(true);
@@ -199,11 +243,11 @@ export default function CreateDonationRequestPage() {
 
   // ── Loading ──────────────────────────────────────────────────────────────────
 
-  if (isPending) {
+  if (isPending || loadingEdit) {
     return (
       <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#94a3b8", padding: "60px 24px" }}>
         <div style={{ width: 22, height: 22, border: "2.5px solid rgba(148,163,184,0.2)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-        <span>Loading…</span>
+        <span>{loadingEdit ? "Loading request data…" : "Loading…"}</span>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
@@ -282,33 +326,36 @@ export default function CreateDonationRequestPage() {
             <CheckCircle2 size={34} color="#4ade80" />
           </div>
           <h2 style={{ margin: "0 0 10px", fontSize: "1.3rem", fontWeight: 700, color: "#4ade80" }}>
-            Request Submitted!
+            {isEditMode ? "Request Updated!" : "Request Submitted!"}
           </h2>
           <p style={{ margin: "0 0 28px", color: "#94a3b8", fontSize: "0.9rem", lineHeight: 1.65 }}>
-            Your blood donation request has been submitted successfully and is now
-            <strong style={{ color: "#fbbf24" }}> pending</strong>. A donor will reach out soon.
+            {isEditMode
+              ? "Your donation request has been updated successfully."
+              : <>Your blood donation request has been submitted successfully and is now <strong style={{ color: "#fbbf24" }}>pending</strong>. A donor will reach out soon.</>}
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+            {!isEditMode && (
+              <button
+                onClick={() => {
+                  setSuccess(false);
+                  setRecipientName(""); setRecipientDistrict(""); setRecipientUpazila("");
+                  setHospitalName(""); setFullAddress(""); setBloodGroup("");
+                  setDonationDate(""); setDonationTime(""); setRequestMessage("");
+                  setFilteredUpazilas([]);
+                }}
+                style={{
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                  padding: "10px 22px", borderRadius: 10,
+                  background: "rgba(239,68,68,0.15)",
+                  border: "1px solid rgba(239,68,68,0.4)",
+                  color: "#f87171", fontSize: "0.875rem", fontWeight: 700, cursor: "pointer",
+                }}
+              >
+                <Send size={14} /> Create Another
+              </button>
+            )}
             <button
-              onClick={() => {
-                setSuccess(false);
-                setRecipientName(""); setRecipientDistrict(""); setRecipientUpazila("");
-                setHospitalName(""); setFullAddress(""); setBloodGroup("");
-                setDonationDate(""); setDonationTime(""); setRequestMessage("");
-                setFilteredUpazilas([]);
-              }}
-              style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                padding: "10px 22px", borderRadius: 10,
-                background: "rgba(239,68,68,0.15)",
-                border: "1px solid rgba(239,68,68,0.4)",
-                color: "#f87171", fontSize: "0.875rem", fontWeight: 700, cursor: "pointer",
-              }}
-            >
-              <Send size={14} /> Create Another
-            </button>
-            <button
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push("/dashboard/my-donation-requests")}
               style={{
                 display: "inline-flex", alignItems: "center", gap: 8,
                 padding: "10px 22px", borderRadius: 10,
@@ -317,7 +364,7 @@ export default function CreateDonationRequestPage() {
                 color: "#e2e8f0", fontSize: "0.875rem", fontWeight: 600, cursor: "pointer",
               }}
             >
-              <Home size={14} /> Dashboard
+              <Home size={14} /> My Requests
             </button>
           </div>
         </div>
@@ -357,14 +404,16 @@ export default function CreateDonationRequestPage() {
             border: "1px solid rgba(239,68,68,0.3)",
             display: "flex", alignItems: "center", justifyContent: "center",
           }}>
-            <Droplets size={20} color="#f87171" />
+            {isEditMode ? <Pencil size={18} color="#f87171" /> : <Droplets size={20} color="#f87171" />}
           </div>
           <div>
             <h1 style={{ margin: 0, fontSize: "1.5rem", fontWeight: 700, color: "#f1f5f9", letterSpacing: "-0.02em" }}>
-              Create Donation Request
+              {isEditMode ? "Edit Donation Request" : "Create Donation Request"}
             </h1>
             <p style={{ margin: 0, color: "#64748b", fontSize: "0.83rem", marginTop: 2 }}>
-              Fill in the details below to post a blood donation request.
+              {isEditMode
+                ? "Update the details of your donation request below."
+                : "Fill in the details below to post a blood donation request."}
             </p>
           </div>
         </div>
@@ -650,12 +699,12 @@ export default function CreateDonationRequestPage() {
               {submitting ? (
                 <>
                   <div style={{ width: 16, height: 16, border: "2.5px solid rgba(248,113,113,0.25)", borderTopColor: "#f87171", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
-                  Submitting…
+                  {isEditMode ? "Saving…" : "Submitting…"}
                 </>
               ) : (
                 <>
-                  <Send size={16} />
-                  Submit Request
+                  {isEditMode ? <Pencil size={16} /> : <Send size={16} />}
+                  {isEditMode ? "Save Changes" : "Submit Request"}
                 </>
               )}
             </button>
