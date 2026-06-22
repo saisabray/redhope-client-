@@ -17,21 +17,21 @@ import { authClient } from "@/lib/auth-client";
 
 const dashboardItems = {
   donor: [
-    { icon: LayoutDashboard,   label: "Dashboard",            link: "/dashboard" },
+    { icon: LayoutDashboard,   label: "Overview",            link: "/dashboard/donor" },
     { icon: User,              label: "Profile",              link: "/dashboard/profile" },
     { icon: TbAsset,           label: "My Requests",          link: "/dashboard/my-donation-requests" },
     { icon: MdOutlineBloodtype,label: "Create Request",       link: "/dashboard/create-donation-request" },
   ],
   admin: [
-    { icon: LayoutDashboard,   label: "Dashboard",            link: "/dashboard" },
+    { icon: LayoutDashboard,   label: "Overview ",            link: "/dashboard/admin" },
     { icon: User,              label: "Profile",              link: "/dashboard/profile" },
-    { icon: User,              label: "All Users",            link: "/dashboard/all-users" },
-    { icon: Bell,              label: "Donation Requests",    link: "/dashboard/all-blood-donation-request" },
+    { icon: User,              label: "All Users",            link: "/dashboard/admin/all-users" },
+    { icon: Bell,              label: "Donation Requests",    link: "/dashboard/donation-request" },
   ],
   volunteer: [
-    { icon: LayoutDashboard,   label: "Dashboard",            link: "/dashboard" },
+    { icon: LayoutDashboard,   label: "Overview",            link: "/dashboard/volunteer" },
     { icon: User,              label: "Profile",              link: "/dashboard/profile" },
-    { icon: Bell,              label: "Donation Requests",    link: "/dashboard/all-blood-donation-request" },
+    { icon: Bell,              label: "Donation Requests",    link: "/dashboard/donation-request" },
   ],
 };
 
@@ -131,8 +131,10 @@ function NavContent({ pathname, navItems, meta, user, isPending, onNavigate, com
       <nav aria-label="Dashboard navigation">
         <ul role="list" style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 3 }}>
           {navItems.map(({ icon: Icon, label, link }) => {
-            const isActive = link === "/dashboard"
-              ? pathname === "/dashboard"
+           
+            const overviewLinks = ["/dashboard/admin", "/dashboard/donor", "/dashboard/volunteer"];
+            const isActive = overviewLinks.includes(link)
+              ? pathname === link
               : pathname.startsWith(link);
 
             return (

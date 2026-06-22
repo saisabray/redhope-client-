@@ -32,6 +32,8 @@ export default function SignUpForm({ districts = [], upazilas = [] }) {
   const [filteredUpazilas, setFilteredUpazilas] = useState([]);
   const [blood, setBlood] = useState("");
   const [upazila, setUpazila] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const inputClass =
     "bg-slate-950 border border-slate-800 text-slate-100 placeholder:text-slate-500 focus:border-red-500";
@@ -57,38 +59,47 @@ export default function SignUpForm({ districts = [], upazilas = [] }) {
   // ✅ Submit form
   const onSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
+    const password = e.target.elements.password.value;
+    const confirmPassword = e.target.elements.confirmPassword.value;
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
 
     try {
+      setLoading(true);
       const formData = new FormData(e.target);
       const imageFile = formData.get("image");
 
-      const image = await imageUpload(imageFile);
+      // Only upload image if a file was actually selected
+      let imageUrl = "";
+      if (imageFile && imageFile.size > 0) {
+        const uploaded = await imageUpload(imageFile);
+        imageUrl = uploaded?.url ?? "";
+      }
 
-      const userData = {
+      const { error: signUpError } = await authClient.signUp.email({
         name: formData.get("name"),
-        image: image.url,
+        email: formData.get("email"),
+        password,
+        image: imageUrl,
+        // Additional fields supported by better-auth additionalFields config
         bloodGroup: blood,
         district: selectedDistrict,
         upazila: upazila,
-        email: formData.get("email"),
-        password: formData.get("password"),
-        confirmPassword: formData.get("confirmPassword"),
         role: "donor",
         status: "active",
-      };
+      });
 
-      if (userData.password !== userData.confirmPassword) {
-        alert("Passwords do not match");
+      if (signUpError) {
+        setError(signUpError.message || "Signup failed. Please try again.");
         return;
       }
 
-      const { error } = await authClient.signUp.email(userData);
-
-      if (error) {
-        alert("Signup failed");
-        return;
-      }
-
+      // Reset form on success
       e.target.reset();
       setBlood("");
       setSelectedDistrict("");
@@ -98,6 +109,9 @@ export default function SignUpForm({ districts = [], upazilas = [] }) {
       router.push("/");
     } catch (err) {
       console.error(err);
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -115,6 +129,13 @@ export default function SignUpForm({ districts = [], upazilas = [] }) {
       <h1 className="text-center text-2xl font-semibold text-slate-300 mb-6">
         Sign Up
       </h1>
+
+      {/* Error message */}
+      {error && (
+        <p className="mx-6 mb-2 text-sm text-red-400 bg-red-950 border border-red-700 rounded px-3 py-2">
+          {error}
+        </p>
+      )}
 
       <Form className="flex flex-col gap-4 px-6" onSubmit={onSubmit}>
         {/* NAME */}
@@ -136,7 +157,7 @@ export default function SignUpForm({ districts = [], upazilas = [] }) {
         </div>
 
         {/* BLOOD GROUP */}
-        <Select onChange={(v) => setBlood(Array.from(v)[0])}>
+        <Select onChange={(v) => setBlood(Array.isArray(v) ? [...v][0] : v)}>
           <Label className="text-slate-300">Blood Group</Label>
           <Select.Trigger className={selectClass}>
             <Select.Value placeholder="Select blood group" />
@@ -171,7 +192,7 @@ export default function SignUpForm({ districts = [], upazilas = [] }) {
 
         {/* UPAZILA */}
         <Select
-          onChange={(v) => setUpazila(Array.from(v)[0])}
+          onChange={(v) => setUpazila(Array.isArray(v) ? [...v][0] : v)}
           isDisabled={!selectedDistrict}
         >
           <Label className="text-slate-300">Upazila</Label>
@@ -211,12 +232,12 @@ export default function SignUpForm({ districts = [], upazilas = [] }) {
 
         {/* BUTTONS */}
         <div className="flex gap-2">
-          <Button type="submit" color="danger">
+          <Button type="submit" color="danger" isDisabled={loading}>
             <Check />
-            Submit
+            {loading ? "Submitting..." : "Submit"}
           </Button>
 
-          <Button type="reset" variant="bordered">
+          <Button type="reset" variant="bordered" isDisabled={loading}>
             Reset
           </Button>
         </div>

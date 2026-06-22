@@ -1,7 +1,7 @@
 const page = () => {
     return (
         <div>
-            <h1>Donor Dashboard</h1>
+            <h1>All Blood Donation Requests</h1>
         </div>
     );
 };

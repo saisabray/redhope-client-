@@ -25,6 +25,7 @@ export default function DashboardLayout({ children }) {
               lg:pt-8 lg:px-8 lg:py-8
               xl:px-10 xl:py-10
             "
+            style={{ color: "#f1f5f9" }}
           >
             {children}
           </div>

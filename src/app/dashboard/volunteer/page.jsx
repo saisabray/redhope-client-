@@ -1,10 +1,9 @@
-const VolunteerPage = () => {
+const page = () => {
   return (
     <div>
-      <p>This is Volunteer Page</p>
+      <h1>Volunteer Dashboard</h1>
     </div>
   );
 };
 
-export default VolunteerPage;
-  
+export default page;
