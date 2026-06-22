@@ -41,3 +41,18 @@ export const updateUserRole = async (id, role) => {
     throw error;
   }
 };
+
+export const updateUserProfile = async (id, profileData) => {
+  try {
+    const res = await fetch(`${BASE_URL}/users/${id}/profile`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(profileData),
+    });
+    if (!res.ok) throw new Error("Failed to update profile");
+    return await res.json();
+  } catch (error) {
+    console.error("Failed to update profile:", error);
+    throw error;
+  }
+};

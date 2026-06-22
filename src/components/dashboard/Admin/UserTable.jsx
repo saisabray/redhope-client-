@@ -255,16 +255,20 @@ export function UserTable() {
 
   if (loading) {
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#94a3b8", padding: "40px 0" }}>
-        <div style={{ width: 22, height: 22, border: "2.5px solid rgba(148,163,184,0.2)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-        <span style={{ fontSize: "0.95rem" }}>Loading users…</span>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14, color: "#94a3b8", padding: "60px 0", minHeight: 200 }}>
+        <div style={{ width: 36, height: 36, border: "3px solid rgba(148,163,184,0.15)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+        <span style={{ fontSize: "0.9rem", letterSpacing: "0.02em" }}>Loading users…</span>
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
   if (error) {
-    return <div style={{ color: "#f87171", padding: "20px 0", fontSize: "0.95rem" }}>⚠ {error}</div>;
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", color: "#f87171", padding: "40px 0", fontSize: "0.95rem", gap: 8 }}>
+        ⚠ {error}
+      </div>
+    );
   }
 
   // ── Filter button helper ──────────────────────────────────────────────────
