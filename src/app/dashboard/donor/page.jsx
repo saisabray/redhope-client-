@@ -168,7 +168,7 @@ function ActionDropdown({ req, onDelete, onStatusChange, busyId, router }) {
   };
 
   const actions = [
-    { key: "view",   label: "View Details", icon: Eye,          color: "#94a3b8", onClick: () => router.push(`/dashboard/donation-requests/${id}`) },
+    { key: "view",   label: "View Details", icon: Eye,          color: "#94a3b8", onClick: () => router.push(`/donation-requests/${id}`) },
     canEdit   && { key: "edit",   label: "Edit",         icon: Pencil,       color: "#60a5fa", onClick: () => router.push(`/dashboard/create-donation-request?edit=${id}`) },
     canDelete && { key: "delete", label: "Delete",       icon: Trash2,       color: "#f87171", onClick: () => onDelete(req) },
     isInProgress && { key: "done",   label: "Mark as Done", icon: CheckCircle2, color: "#4ade80", onClick: () => { onStatusChange(id, "done");     setOpen(false); } },

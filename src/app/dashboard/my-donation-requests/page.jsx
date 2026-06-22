@@ -7,7 +7,7 @@ import { authClient } from "@/lib/auth-client";
 import {
   Droplets, Filter, ChevronLeft, ChevronRight,
   Pencil, Trash2, X, Check, Clock, MapPin,
-  CalendarDays, Building2, MoreVertical, Plus,
+  CalendarDays, Building2, MoreVertical, Plus, Eye,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -81,7 +81,7 @@ function BloodBadge({ group }) {
 
 // ── Action Dropdown ───────────────────────────────────────────────────────────
 
-function ActionDropdown({ request, onDelete, onEdit, isBusy }) {
+function ActionDropdown({ request, onDelete, onEdit, isBusy, router }) {
   const [open, setOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0, width: 160 });
   const btnRef = useRef(null);
@@ -142,7 +142,10 @@ function ActionDropdown({ request, onDelete, onEdit, isBusy }) {
   const canEdit   = request.status === "pending";
   const canDelete = request.status === "pending" || request.status === "canceled";
 
+  const id = getId(request);
+
   const actions = [
+    { key: "view",   label: "View Details", icon: Eye,    color: "#94a3b8", onClick: () => router.push(`/donation-requests/${id}`) },
     canEdit   && { key: "edit",   label: "Edit",   icon: Pencil, color: "#60a5fa", onClick: () => onEdit(request) },
     canDelete && { key: "delete", label: "Delete", icon: Trash2, color: "#f87171", onClick: () => onDelete(request) },
   ].filter(Boolean);
@@ -337,6 +340,8 @@ export default function MyDonationRequestsPage() {
     if (!deleteTarget) return;
     const id = getId(deleteTarget);
     setDeleteLoading(true);
+    setBusy((prev) => ({ ...prev, [id]: true }));
+
     try {
       const res = await fetch(`${BASE_URL}/donation-requests/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error();
@@ -346,6 +351,7 @@ export default function MyDonationRequestsPage() {
       alert("Failed to delete request. Please try again.");
     } finally {
       setDeleteLoading(false);
+      setBusy((prev) => ({ ...prev, [id]: false }));
     }
   };
 
@@ -596,6 +602,7 @@ export default function MyDonationRequestsPage() {
                           isBusy={isBusy}
                           onEdit={handleEdit}
                           onDelete={(r) => setDeleteTarget(r)}
+                          router={router}
                         />
                       </td>
                     </tr>
