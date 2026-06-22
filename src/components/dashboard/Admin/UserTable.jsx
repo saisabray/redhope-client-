@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
+import { createPortal } from "react-dom";
 import { getAllUsers, updateUserStatus, updateUserRole } from "@/lib/Api/all-users";
 import {
   ShieldCheck,
@@ -85,10 +86,16 @@ function UserAvatar({ name, image }) {
 }
 
 // ── 3-dot dropdown ────────────────────────────────────────────────────────────
+// Renders via portal so overflow:auto on the table never clips the menu.
 
 function ActionDropdown({ user, onStatusToggle, onRoleChange, isBusy }) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef(null);
+  const [open, setOpen]       = useState(false);
+  const [menuPos, setMenuPos] = useState({ top: 0, left: 0, width: 175 });
+  const [mounted, setMounted] = useState(false);
+  const btnRef  = useRef(null);
+  const menuRef = useRef(null);
+
+  useEffect(() => { setMounted(true); }, []);
 
   const isActive    = user.status === "active";
   const isBlocked   = user.status === "blocked";
@@ -99,11 +106,38 @@ function ActionDropdown({ user, onStatusToggle, onRoleChange, isBusy }) {
   useEffect(() => {
     if (!open) return;
     const handler = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (
+        menuRef.current && !menuRef.current.contains(e.target) &&
+        btnRef.current  && !btnRef.current.contains(e.target)
+      ) setOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
+
+  // Reposition on scroll / resize
+  useEffect(() => {
+    if (!open) return;
+    const update = () => {
+      if (!btnRef.current) return;
+      const r = btnRef.current.getBoundingClientRect();
+      const menuW = 175;
+      setMenuPos({ top: r.bottom + 6, left: Math.max(8, r.right - menuW), width: menuW });
+    };
+    update();
+    window.addEventListener("scroll", update, true);
+    window.addEventListener("resize", update);
+    return () => { window.removeEventListener("scroll", update, true); window.removeEventListener("resize", update); };
+  }, [open]);
+
+  const handleToggle = () => {
+    if (btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      const menuW = 175;
+      setMenuPos({ top: r.bottom + 6, left: Math.max(8, r.right - menuW), width: menuW });
+    }
+    setOpen((v) => !v);
+  };
 
   const actions = [
     isActive  && { key: "block",     label: "Block",          icon: Ban,        color: "#f87171", onClick: () => onStatusToggle(user) },
@@ -112,10 +146,64 @@ function ActionDropdown({ user, onStatusToggle, onRoleChange, isBusy }) {
     (isDonor || isVolunteer) && { key: "admin", label: "Make Admin", icon: ShieldCheck, color: "#a78bfa", onClick: () => onRoleChange(user, "admin") },
   ].filter(Boolean);
 
+  const menu = (
+    <div ref={menuRef} style={{
+      position: "fixed",
+      top: menuPos.top,
+      left: menuPos.left,
+      width: menuPos.width,
+      zIndex: 99999,
+      background: "#111827",
+      border: "1px solid rgba(148,163,184,0.12)",
+      borderRadius: 12,
+      boxShadow: "0 8px 32px rgba(0,0,0,0.7)",
+      overflow: "hidden",
+      animation: "dropIn 0.14s ease",
+    }}>
+      {actions.length === 0 ? (
+        <p style={{ padding: "12px 16px", color: "#64748b", fontSize: "0.8rem", margin: 0 }}>
+          No actions available
+        </p>
+      ) : (
+        actions.map(({ key, label, icon: Icon, color, onClick }) => (
+          <button
+            key={key}
+            onClick={() => { onClick(); setOpen(false); }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 10,
+              width: "100%",
+              padding: "10px 16px",
+              border: "none",
+              background: "transparent",
+              color: "#cbd5e1",
+              fontSize: "0.83rem",
+              fontWeight: 500,
+              cursor: "pointer",
+              textAlign: "left",
+              transition: "background 0.12s",
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.color = color; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#cbd5e1"; }}
+          >
+            <Icon size={14} style={{ color, flexShrink: 0 }} />
+            {label}
+          </button>
+        ))
+      )}
+    </div>
+  );
+
   return (
-    <div ref={ref} style={{ position: "relative", display: "inline-block" }}>
+    <div style={{ display: "inline-block" }}>
+      <style>{`
+        @keyframes spin    { to { transform: rotate(360deg); } }
+        @keyframes dropIn  { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+      `}</style>
       <button
-        onClick={() => setOpen((v) => !v)}
+        ref={btnRef}
+        onClick={handleToggle}
         disabled={isBusy}
         title="Actions"
         style={{
@@ -138,60 +226,7 @@ function ActionDropdown({ user, onStatusToggle, onRoleChange, isBusy }) {
           ? <div style={{ width: 14, height: 14, border: "2px solid rgba(148,163,184,0.2)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
           : <MoreVertical size={16} />}
       </button>
-
-      {open && (
-        <div style={{
-          position: "absolute",
-          right: 0,
-          top: "calc(100% + 6px)",
-          zIndex: 100,
-          background: "#111827",
-          border: "1px solid rgba(148,163,184,0.12)",
-          borderRadius: 12,
-          boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
-          minWidth: 170,
-          overflow: "hidden",
-          animation: "dropIn 0.14s ease",
-        }}>
-          {actions.length === 0 ? (
-            <p style={{ padding: "12px 16px", color: "#64748b", fontSize: "0.8rem", margin: 0 }}>
-              No actions available
-            </p>
-          ) : (
-            actions.map(({ key, label, icon: Icon, color, onClick }) => (
-              <button
-                key={key}
-                onClick={() => { onClick(); setOpen(false); }}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  width: "100%",
-                  padding: "10px 16px",
-                  border: "none",
-                  background: "transparent",
-                  color: "#cbd5e1",
-                  fontSize: "0.83rem",
-                  fontWeight: 500,
-                  cursor: "pointer",
-                  textAlign: "left",
-                  transition: "background 0.12s",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.color = color; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#cbd5e1"; }}
-              >
-                <Icon size={14} style={{ color, flexShrink: 0 }} />
-                {label}
-              </button>
-            ))
-          )}
-        </div>
-      )}
-
-      <style>{`
-        @keyframes spin    { to { transform: rotate(360deg); } }
-        @keyframes dropIn  { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
-      `}</style>
+      {open && mounted && createPortal(menu, document.body)}
     </div>
   );
 }
