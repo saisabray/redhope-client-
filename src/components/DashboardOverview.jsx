@@ -42,9 +42,12 @@ export default function DashboardOverview({ roleLabel }) {
     fetchStats();
   }, []);
 
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Good Morning" : hour < 17 ? "Good Afternoon" : "Good Evening";
+  const [greeting, setGreeting] = useState("");
 
+  useEffect(() => {
+    const hour = new Date().getHours();
+    setGreeting(hour < 12 ? "Good Morning" : hour < 17 ? "Good Afternoon" : "Good Evening");
+  }, []);
   if (isPending) {
     return (
       <div className="flex items-center gap-3 text-slate-400 py-[60px] px-6">

@@ -294,7 +294,11 @@ function CreateDonationRequestContent() {
 
   // ── Form ─────────────────────────────────────────────────────────────────────
 
-  const today = new Date().toISOString().split("T")[0];
+  const [today, setToday] = useState("");
+
+  useEffect(() => {
+    setToday(new Date().toISOString().split("T")[0]);
+  }, []);
 
   return (
     <div className="pt-1 pb-10 min-h-full text-slate-100 font-sans">

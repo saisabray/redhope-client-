@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import { Heart, CreditCard, CalendarDays, User, ArrowRight, Activity, DollarSign } from "lucide-react";
 
@@ -11,7 +11,11 @@ export default function FundingClient({ initialFundings = [] }) {
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [mounted, setMounted] = useState(false);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const handleDonate = async (e) => {
     e.preventDefault();
     if (!amount || isNaN(amount) || Number(amount) <= 0) {
@@ -188,14 +192,14 @@ export default function FundingClient({ initialFundings = [] }) {
                           <td className="py-5 px-8 text-right text-[14px] text-slate-400 font-medium">
                             <div className="flex items-center justify-end gap-2.5">
                               <CalendarDays size={14} className="text-slate-500" />
-                              <span suppressHydrationWarning>
-                                {fund.createdAt 
+                              <span>
+                                {mounted && fund.createdAt 
                                   ? new Date(fund.createdAt).toLocaleDateString('en-US', {
                                       month: 'short',
                                       day: 'numeric',
                                       year: 'numeric'
                                     })
-                                  : "N/A"}
+                                  : (mounted ? "N/A" : "")}
                               </span>
                             </div>
                           </td>
