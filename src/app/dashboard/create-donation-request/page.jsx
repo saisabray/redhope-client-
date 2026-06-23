@@ -183,9 +183,13 @@ export default function CreateDonationRequestPage() {
         payload.createdAt      = new Date().toISOString();
       }
 
+      const { data: token } = await authClient.token();
       const res = await fetch(url, {
         method,
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token?.token}`
+        },
         body: JSON.stringify(payload),
       });
 

@@ -1,11 +1,14 @@
+import { authClient } from "../auth-client";
+
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 // Create a new donation request
 export const createDonationRequest = async (payload) => {
+  const { data: token } = await authClient.token()
   try {
     const res = await fetch(`${BASE_URL}/donation-requests`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token?.token}` },
       body: JSON.stringify(payload),
     });
     if (!res.ok) {
@@ -33,8 +36,11 @@ export const getAllDonationRequests = async () => {
 
 // Get donation requests by requester email
 export const getMyDonationRequests = async (email) => {
+  const { data: token } = await authClient.token();
   try {
-    const res = await fetch(`${BASE_URL}/donation-requests/my/${encodeURIComponent(email)}`);
+    const res = await fetch(`${BASE_URL}/donation-requests/my/${encodeURIComponent(email)}`, {
+      headers: { "Authorization": `Bearer ${token?.token}` }
+    });
     if (!res.ok) throw new Error("Failed to fetch your donation requests.");
     return await res.json();
   } catch (error) {
@@ -57,10 +63,14 @@ export const getDonationRequestById = async (id) => {
 
 // Update donation request status
 export const updateDonationRequestStatus = async (id, status) => {
+  const { data: token } = await authClient.token();
   try {
     const res = await fetch(`${BASE_URL}/donation-requests/${id}/status`, {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token?.token}`
+      },
       body: JSON.stringify({ status }),
     });
     if (!res.ok) throw new Error("Failed to update donation request status.");
@@ -73,9 +83,11 @@ export const updateDonationRequestStatus = async (id, status) => {
 
 // Delete a donation request
 export const deleteDonationRequest = async (id) => {
+  const { data: token } = await authClient.token();
   try {
     const res = await fetch(`${BASE_URL}/donation-requests/${id}`, {
       method: "DELETE",
+      headers: { "Authorization": `Bearer ${token?.token}` }
     });
     if (!res.ok) throw new Error("Failed to delete donation request.");
     return await res.json();

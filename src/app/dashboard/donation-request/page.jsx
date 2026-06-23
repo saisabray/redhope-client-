@@ -11,6 +11,7 @@ import {
   User2, Mail, ShieldAlert,
 } from "lucide-react";
 import Link from "next/link";
+import { getAllDonationRequests, updateDonationRequestStatus, deleteDonationRequest } from "@/lib/Api/donation-requests";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -230,8 +231,7 @@ export default function AllDonationRequestsPage() {
   useEffect(() => {
     if (!user) return;
     setLoading(true);
-    fetch(`${BASE_URL}/donation-requests`)
-      .then((r) => r.json())
+    getAllDonationRequests()
       .then((data) => setRequests(Array.isArray(data) ? data : []))
       .catch(() => setError("Failed to load donation requests."))
       .finally(() => setLoading(false));
@@ -253,12 +253,7 @@ export default function AllDonationRequestsPage() {
   const handleStatusChange = async (id, newStatus) => {
     setBusy((prev) => ({ ...prev, [id]: true }));
     try {
-      const res = await fetch(`${BASE_URL}/donation-requests/${id}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
-      });
-      if (!res.ok) throw new Error();
+      await updateDonationRequestStatus(id, newStatus);
       setRequests((prev) =>
         prev.map((r) => (getId(r) === id ? { ...r, status: newStatus } : r))
       );
@@ -281,8 +276,7 @@ export default function AllDonationRequestsPage() {
     setDeleteLoading(true);
     setBusy((prev) => ({ ...prev, [id]: true }));
     try {
-      const res = await fetch(`${BASE_URL}/donation-requests/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error();
+      await deleteDonationRequest(id);
       setRequests((prev) => prev.filter((r) => getId(r) !== id));
       setDeleteTarget(null);
     } catch {

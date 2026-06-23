@@ -202,9 +202,13 @@ export default function DonationRequestDetailsPage() {
     if (!user || !request) return;
     setConfirming(true);
     try {
+      const { data: token } = await authClient.token();
       const res = await fetch(`${BASE_URL}/donation-requests/${id}/status`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token?.token}`
+        },
         body: JSON.stringify({
           status: "inprogress",
           donorName:  user.name,

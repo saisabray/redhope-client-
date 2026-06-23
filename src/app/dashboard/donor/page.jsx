@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { getMyDonationRequests, updateDonationRequestStatus, deleteDonationRequest } from "@/lib/Api/donation-requests";
 import { createPortal } from "react-dom";
 import Link from "next/link";
 import {
@@ -301,8 +302,7 @@ export default function DonorDashboardPage() {
   useEffect(() => {
     if (!user?.email) return;
     setLoading(true);
-    fetch(`${BASE_URL}/donation-requests/my/${encodeURIComponent(user.email)}`)
-      .then((r) => r.json())
+    getMyDonationRequests(user.email)
       .then((data) => setRequests(Array.isArray(data) ? data : []))
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -315,12 +315,7 @@ export default function DonorDashboardPage() {
   const handleStatusChange = async (id, newStatus) => {
     setBusyId(id);
     try {
-      const res = await fetch(`${BASE_URL}/donation-requests/${id}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
-      });
-      if (!res.ok) throw new Error();
+      await updateDonationRequestStatus(id, newStatus);
       setRequests((prev) =>
         prev.map((r) => (getId(r) === id ? { ...r, status: newStatus } : r))
       );
@@ -337,8 +332,7 @@ export default function DonorDashboardPage() {
     const id = getId(deleteTarget);
     setDeleteLoading(true);
     try {
-      const res = await fetch(`${BASE_URL}/donation-requests/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error();
+      await deleteDonationRequest(id);
       setRequests((prev) => prev.filter((r) => getId(r) !== id));
       setDeleteTarget(null);
     } catch {

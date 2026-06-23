@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import NextLink from "next/link";
 import {
@@ -25,7 +25,9 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = authClient.useSession();
-  const user = session?.user;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const user = mounted ? session?.user : null;
   const isActive = (href) => pathname === href;
   const dashboardHref = user?.role ? `/dashboard/${user.role}` : "/dashboard";
 

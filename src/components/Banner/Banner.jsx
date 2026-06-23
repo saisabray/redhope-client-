@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import NextLink from "next/link";
 import { Link } from "@heroui/react";
@@ -8,7 +9,9 @@ import { authClient } from "@/lib/auth-client";
 export default function Banner() {
 
   const { data: session } = authClient.useSession();
-  const user = session?.user;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const user = mounted ? session?.user : null;
   return (
     <section className="relative flex min-h-screen items-center justify-center overflow-hidden">
       {/* Background */}

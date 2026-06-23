@@ -18,17 +18,28 @@ export default function DashboardOverview({ roleLabel }) {
   const [loadingStats, setLoadingStats] = useState(true);
 
   useEffect(() => {
-    fetch(`${BASE_URL}/admin/stats`)
-      .then((res) => res.json())
-      .then((data) => {
+    const fetchStats = async () => {
+      try {
+        const { data: token } = await authClient.token();
+        const res = await fetch(`${BASE_URL}/admin/stats`, {
+          headers: {
+            "Authorization": `Bearer ${token?.token}`
+          }
+        });
+        const data = await res.json();
         setStats({
           totalDonors: data.totalDonors || 0,
           totalFunding: data.totalFunding || 0,
           totalRequests: data.totalRequests || 0,
         });
-      })
-      .catch((err) => console.error("Failed to fetch stats", err))
-      .finally(() => setLoadingStats(false));
+      } catch (err) {
+        console.error("Failed to fetch stats", err);
+      } finally {
+        setLoadingStats(false);
+      }
+    };
+
+    fetchStats();
   }, []);
 
   const hour = new Date().getHours();

@@ -10,6 +10,7 @@ import {
   CalendarDays, Building2, MoreVertical, Plus, Eye,
 } from "lucide-react";
 import Link from "next/link";
+import { getMyDonationRequests, deleteDonationRequest } from "@/lib/Api/donation-requests";
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -256,8 +257,7 @@ export default function MyDonationRequestsPage() {
   useEffect(() => {
     if (!user?.email) return;
     setLoading(true);
-    fetch(`${BASE_URL}/donation-requests/my/${encodeURIComponent(user.email)}`)
-      .then((r) => r.json())
+    getMyDonationRequests(user.email)
       .then((data) => setRequests(Array.isArray(data) ? data : []))
       .catch(() => setError("Failed to load donation requests."))
       .finally(() => setLoading(false));
@@ -284,8 +284,7 @@ export default function MyDonationRequestsPage() {
     setBusy((prev) => ({ ...prev, [id]: true }));
 
     try {
-      const res = await fetch(`${BASE_URL}/donation-requests/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error();
+      await deleteDonationRequest(id);
       setRequests((prev) => prev.filter((r) => getId(r) !== id));
       setDeleteTarget(null);
     } catch {
