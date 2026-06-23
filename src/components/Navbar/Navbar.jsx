@@ -16,10 +16,11 @@ import { authClient, signOut } from "@/lib/auth-client";
 const navItems = [
   { label: "Home", href: "/" },
   { label: "Donation Requests", href: "/donation-requests" },
+  { label: "Search Blood", href: "/search" },
   { label: "Funding", href: "/funding", auth: true },
 ];
 
-export default function Navbar() {
+export default function Navbar() { 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();

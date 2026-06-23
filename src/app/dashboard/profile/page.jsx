@@ -12,17 +12,17 @@ import { Pencil, Save, X, Camera, User, Mail, Droplets, MapPin, MapPinned, Shiel
 const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
 const ROLE_COLORS = {
-  admin:     { text: "#a78bfa", bg: "rgba(139,92,246,0.15)", border: "rgba(139,92,246,0.35)" },
-  volunteer: { text: "#4ade80", bg: "rgba(34,197,94,0.12)",  border: "rgba(34,197,94,0.3)"   },
-  donor:     { text: "#60a5fa", bg: "rgba(59,130,246,0.12)", border: "rgba(59,130,246,0.3)"  },
+  admin:     { text: "text-purple-400", bg: "bg-purple-500/15", border: "border-purple-500/35" },
+  volunteer: { text: "text-green-400",  bg: "bg-green-500/15",  border: "border-green-500/30"   },
+  donor:     { text: "text-blue-400",   bg: "bg-blue-500/15",   border: "border-blue-500/30"  },
 };
 
 // ── Tiny shared field wrapper ─────────────────────────────────────────────────
 
 function Field({ icon: Icon, label, children }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-      <label style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.75rem", fontWeight: 600, color: "#64748b", letterSpacing: "0.05em", textTransform: "uppercase" }}>
+    <div className="flex flex-col gap-1.5">
+      <label className="flex items-center gap-1.5 text-[0.75rem] font-semibold text-slate-500 tracking-[0.05em] uppercase">
         <Icon size={13} />
         {label}
       </label>
@@ -33,42 +33,14 @@ function Field({ icon: Icon, label, children }) {
 
 // ── Input styles ──────────────────────────────────────────────────────────────
 
-const inputBase = {
-  width: "100%",
-  padding: "10px 14px",
-  borderRadius: 10,
-  fontSize: "0.9rem",
-  fontWeight: 500,
-  outline: "none",
-  transition: "border-color 0.18s, background 0.18s",
-  boxSizing: "border-box",
-};
+const inputBaseClasses = "w-full px-3.5 py-2.5 rounded-[10px] text-[0.9rem] font-medium outline-none transition-colors duration-150 box-border";
 
-const inputReadonly = {
-  ...inputBase,
-  background: "rgba(15,23,42,0.5)",
-  border: "1px solid rgba(148,163,184,0.1)",
-  color: "#94a3b8",
-  cursor: "default",
-};
+const inputReadonlyClasses = `${inputBaseClasses} bg-slate-900/50 border border-slate-400/10 text-slate-400 cursor-default`;
 
-const inputEditable = {
-  ...inputBase,
-  background: "rgba(15,23,42,0.8)",
-  border: "1px solid rgba(148,163,184,0.25)",
-  color: "#f1f5f9",
-};
+const inputEditableClasses = `${inputBaseClasses} bg-slate-900/80 border border-slate-400/25 text-slate-100 focus:border-red-500/50`;
 
-const selectStyle = (editable) => ({
-  ...inputBase,
-  background: editable ? "rgba(15,23,42,0.8)" : "rgba(15,23,42,0.5)",
-  border: editable ? "1px solid rgba(148,163,184,0.25)" : "1px solid rgba(148,163,184,0.1)",
-  color: editable ? "#f1f5f9" : "#94a3b8",
-  cursor: editable ? "pointer" : "default",
-  appearance: "none",
-  WebkitAppearance: "none",
-  pointerEvents: editable ? "auto" : "none",
-});
+const selectClasses = (editable) => 
+  `${inputBaseClasses} appearance-none pointer-events-${editable ? 'auto' : 'none'} ${editable ? 'bg-slate-900/80 border-slate-400/25 text-slate-100 cursor-pointer focus:border-red-500/50' : 'bg-slate-900/50 border-slate-400/10 text-slate-400 cursor-default'} border`;
 
 // ── Profile Page ──────────────────────────────────────────────────────────────
 
@@ -217,54 +189,48 @@ export default function ProfilePage() {
 
   if (isPending) {
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#94a3b8", padding: "60px 24px" }}>
-        <div style={{ width: 22, height: 22, border: "2.5px solid rgba(148,163,184,0.2)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <div className="flex items-center gap-3 text-slate-400 py-[60px] px-6">
+        <div className="w-[22px] h-[22px] border-[2.5px] border-slate-400/20 border-t-red-500 rounded-full animate-[spin_0.8s_linear_infinite]" />
         <span>Loading profile…</span>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
   if (!user) {
-    return <p style={{ color: "#f87171", padding: 24 }}>Not authenticated.</p>;
+    return <p className="text-red-400 p-6">Not authenticated.</p>;
   }
 
   return (
-    <div style={{ padding: "32px 24px", minHeight: "100vh", background: "linear-gradient(135deg,#0a0f1e 0%,#0d1526 50%,#0a0f1e 100%)" }}>
+    <div className="min-h-screen py-8 px-6 bg-[linear-gradient(135deg,#0a0f1e_0%,#0d1526_50%,#0a0f1e_100%)]">
 
       {/* Page title */}
-      <div style={{ marginBottom: 28, maxWidth: 760, margin: "0 auto 28px" }}>
-        <h1 style={{ fontSize: "1.6rem", fontWeight: 700, color: "#f1f5f9", margin: 0, letterSpacing: "-0.02em" }}>
+      <div className="max-w-[760px] mx-auto mb-7">
+        <h1 className="m-0 text-[1.6rem] font-bold text-slate-100 tracking-[-0.02em]">
           My Profile
         </h1>
-        <p style={{ color: "#64748b", fontSize: "0.88rem", marginTop: 4 }}>
+        <p className="m-0 mt-1 text-slate-500 text-[0.88rem]">
           View and manage your personal information.
         </p>
       </div>
 
       {/* Card */}
-      <div style={{
-        maxWidth: 760,
-        margin: "0 auto",
-        background: "rgba(15,23,42,0.7)",
-        border: "1px solid rgba(148,163,184,0.1)",
-        borderRadius: 20,
-        backdropFilter: "blur(12px)",
-        overflow: "hidden",
-      }}>
+      <div className="max-w-[760px] mx-auto bg-slate-900/70 border border-slate-400/10 rounded-[20px] backdrop-blur-md overflow-hidden">
 
         {/* Card header band */}
-        <div style={{ height: 80, background: "linear-gradient(90deg,rgba(239,68,68,0.25),rgba(139,92,246,0.18))", borderBottom: "1px solid rgba(148,163,184,0.08)" }} />
+        <div className="h-[80px] bg-[linear-gradient(90deg,rgba(239,68,68,0.25),rgba(139,92,246,0.18))] border-b border-slate-400/[0.08]" />
 
         {/* Avatar + top controls */}
-        <div style={{ padding: "0 28px", display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginTop: -44 }}>
+        <div className="px-7 flex items-end justify-between -mt-[44px]">
 
           {/* Avatar */}
-          <div style={{ position: "relative", display: "inline-block" }}>
+          <div className="relative inline-block">
             {avatarSrc ? (
-              <img src={avatarSrc} alt={user.name} style={{ width: 88, height: 88, borderRadius: "50%", objectFit: "cover", border: "3px solid #0d1526", boxShadow: "0 4px 20px rgba(0,0,0,0.5)" }} />
+              <img src={avatarSrc} alt={user.name} className="w-[88px] h-[88px] rounded-full object-cover border-[3px] border-[#0d1526] shadow-[0_4px_20px_rgba(0,0,0,0.5)]" />
             ) : (
-              <div style={{ width: 88, height: 88, borderRadius: "50%", background: `hsl(${hue},55%,38%)`, display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontSize: "1.5rem", fontWeight: 700, border: "3px solid #0d1526", boxShadow: "0 4px 20px rgba(0,0,0,0.5)" }}>
+              <div 
+                className="w-[88px] h-[88px] rounded-full flex items-center justify-center text-white text-2xl font-bold border-[3px] border-[#0d1526] shadow-[0_4px_20px_rgba(0,0,0,0.5)]"
+                style={{ background: `hsl(${hue},55%,38%)` }}
+              >
                 {initials}
               </div>
             )}
@@ -274,35 +240,43 @@ export default function ProfilePage() {
               <button
                 onClick={() => fileRef.current?.click()}
                 title="Change avatar"
-                style={{ position: "absolute", bottom: 0, right: 0, width: 28, height: 28, borderRadius: "50%", background: "#ef4444", border: "2px solid #0d1526", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", color: "#fff" }}
+                className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-red-500 border-2 border-[#0d1526] flex items-center justify-center cursor-pointer text-white hover:bg-red-600 transition-colors"
               >
                 <Camera size={13} />
               </button>
             )}
-            <input ref={fileRef} type="file" accept="image/*" style={{ display: "none" }} onChange={handleAvatarChange} />
+            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
           </div>
 
           {/* Role badge + Edit/Save/Cancel buttons */}
-          <div style={{ display: "flex", alignItems: "center", gap: 10, paddingBottom: 6 }}>
-            <span style={{ padding: "4px 12px", borderRadius: 99, fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: roleColors.text, background: roleColors.bg, border: `1px solid ${roleColors.border}` }}>
+          <div className="flex items-center gap-2.5 pb-1.5">
+            <span className={`px-3 py-1 rounded-full text-[0.72rem] font-bold tracking-[0.05em] uppercase border ${roleColors.text} ${roleColors.bg} ${roleColors.border}`}>
               {user.role ?? "donor"}
             </span>
 
             {!editing ? (
-              <button onClick={handleEdit} style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 16px", borderRadius: 10, border: "1px solid rgba(148,163,184,0.2)", background: "rgba(255,255,255,0.04)", color: "#e2e8f0", fontSize: "0.83rem", fontWeight: 600, cursor: "pointer", transition: "background 0.15s" }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.04)")}
+              <button 
+                onClick={handleEdit} 
+                className="flex items-center gap-1.5 px-4 py-2 rounded-[10px] border border-slate-400/20 bg-white/5 text-slate-200 text-[0.83rem] font-semibold cursor-pointer transition-colors duration-150 hover:bg-white/10"
               >
                 <Pencil size={14} /> Edit Profile
               </button>
             ) : (
               <>
-                <button onClick={handleCancel} disabled={saving} style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 14px", borderRadius: 10, border: "1px solid rgba(148,163,184,0.2)", background: "transparent", color: "#94a3b8", fontSize: "0.83rem", fontWeight: 600, cursor: "pointer" }}>
+                <button 
+                  onClick={handleCancel} 
+                  disabled={saving} 
+                  className="flex items-center gap-1.5 px-3.5 py-2 rounded-[10px] border border-slate-400/20 bg-transparent text-slate-400 text-[0.83rem] font-semibold cursor-pointer hover:bg-white/5 transition-colors"
+                >
                   <X size={14} /> Cancel
                 </button>
-                <button onClick={handleSave} disabled={saving} style={{ display: "flex", alignItems: "center", gap: 7, padding: "8px 16px", borderRadius: 10, border: "1px solid rgba(239,68,68,0.4)", background: "rgba(239,68,68,0.15)", color: "#f87171", fontSize: "0.83rem", fontWeight: 700, cursor: saving ? "not-allowed" : "pointer", opacity: saving ? 0.7 : 1 }}>
+                <button 
+                  onClick={handleSave} 
+                  disabled={saving} 
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-[10px] border border-red-500/40 bg-red-500/15 text-red-400 text-[0.83rem] font-bold transition-opacity ${saving ? 'cursor-not-allowed opacity-70' : 'cursor-pointer hover:bg-red-500/25'}`}
+                >
                   {saving
-                    ? <><div style={{ width: 13, height: 13, border: "2px solid rgba(248,113,113,0.3)", borderTopColor: "#f87171", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Saving…</>
+                    ? <><div className="w-[13px] h-[13px] border-2 border-red-400/30 border-t-red-400 rounded-full animate-[spin_0.7s_linear_infinite]" /> Saving…</>
                     : <><Save size={14} /> Save Changes</>}
                 </button>
               </>
@@ -311,30 +285,30 @@ export default function ProfilePage() {
         </div>
 
         {/* Name under avatar */}
-        <div style={{ padding: "14px 28px 0" }}>
-          <p style={{ margin: 0, fontSize: "1.15rem", fontWeight: 700, color: "#f1f5f9" }}>{user.name}</p>
-          <p style={{ margin: "2px 0 0", fontSize: "0.83rem", color: "#64748b" }}>{user.email}</p>
+        <div className="px-7 pt-3.5">
+          <p className="m-0 text-[1.15rem] font-bold text-slate-100">{user.name}</p>
+          <p className="m-0 mt-0.5 text-[0.83rem] text-slate-500">{user.email}</p>
         </div>
 
         {/* Divider */}
-        <div style={{ height: 1, background: "rgba(148,163,184,0.08)", margin: "20px 28px" }} />
+        <div className="h-px bg-slate-400/[0.08] my-5 mx-7" />
 
         {/* Alerts */}
-        <div style={{ padding: "0 28px" }}>
+        <div className="px-7">
           {saveSuccess && (
-            <div style={{ marginBottom: 16, padding: "10px 16px", borderRadius: 10, background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", color: "#4ade80", fontSize: "0.85rem", fontWeight: 500 }}>
+            <div className="mb-4 px-4 py-2.5 rounded-[10px] bg-green-500/10 border border-green-500/30 text-green-400 text-[0.85rem] font-medium">
               ✓ Profile updated successfully.
             </div>
           )}
           {saveError && (
-            <div style={{ marginBottom: 16, padding: "10px 16px", borderRadius: 10, background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.3)", color: "#f87171", fontSize: "0.85rem" }}>
+            <div className="mb-4 px-4 py-2.5 rounded-[10px] bg-red-500/10 border border-red-500/30 text-red-400 text-[0.85rem]">
               ⚠ {saveError}
             </div>
           )}
         </div>
 
         {/* Form grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px 24px", padding: "0 28px 32px" }}>
+        <div className="grid grid-cols-2 gap-[20px_24px] px-7 pb-8">
 
           {/* Full Name */}
           <Field icon={User} label="Full Name">
@@ -343,20 +317,20 @@ export default function ProfilePage() {
               onChange={(e) => setName(e.target.value)}
               disabled={!editing}
               placeholder="Your name"
-              style={editing ? inputEditable : inputReadonly}
+              className={editing ? inputEditableClasses : inputReadonlyClasses}
             />
           </Field>
 
           {/* Email — always read-only */}
           <Field icon={Mail} label="Email Address">
-            <div style={{ position: "relative" }}>
+            <div className="relative">
               <input
                 value={user.email}
                 disabled
                 readOnly
-                style={{ ...inputReadonly, paddingRight: 36 }}
+                className={`${inputReadonlyClasses} pr-9`}
               />
-              <span title="Email cannot be changed" style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", fontSize: "0.7rem", color: "#475569", fontWeight: 600, letterSpacing: "0.04em" }}>
+              <span title="Email cannot be changed" className="absolute right-3 top-1/2 -translate-y-1/2 text-[0.7rem] text-slate-600 font-semibold tracking-[0.04em]">
                 LOCKED
               </span>
             </div>
@@ -365,11 +339,11 @@ export default function ProfilePage() {
           {/* Blood Group */}
           <Field icon={Droplets} label="Blood Group">
             {editing ? (
-              <div style={{ position: "relative" }}>
+              <div className="relative">
                 <select
                   value={bloodGroup}
                   onChange={(e) => setBloodGroup(e.target.value)}
-                  style={selectStyle(true)}
+                  className={selectClasses(true)}
                 >
                   {[
                     <option key="__bg" value="">Select blood group</option>,
@@ -378,15 +352,15 @@ export default function ProfilePage() {
                     )),
                   ]}
                 </select>
-                <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "#64748b", fontSize: 12 }}>▾</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 text-xs">▾</span>
               </div>
             ) : (
-              <input
-                value={user.bloodGroup || "Not set"}
-                readOnly
-                style={inputReadonly}
-              />
-            )}
+               <input
+                 value={user.bloodGroup || "Not set"}
+                 readOnly
+                 className={inputReadonlyClasses}
+               />
+             )}
           </Field>
 
           {/* Role — display only */}
@@ -395,18 +369,18 @@ export default function ProfilePage() {
               value={user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : ""}
               disabled
               readOnly
-              style={inputReadonly}
+              className={inputReadonlyClasses}
             />
           </Field>
 
           {/* District */}
           <Field icon={MapPin} label="District">
             {editing ? (
-              <div style={{ position: "relative" }}>
+              <div className="relative">
                 <select
                   value={district}
                   onChange={handleDistrictChange}
-                  style={selectStyle(true)}
+                  className={selectClasses(true)}
                 >
                   {[
                     <option key="__district" value="">Select district</option>,
@@ -415,26 +389,26 @@ export default function ProfilePage() {
                     )),
                   ]}
                 </select>
-                <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "#64748b", fontSize: 12 }}>▾</span>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 text-xs">▾</span>
               </div>
             ) : (
-              <input
-                value={user.district || "Not set"}
-                readOnly
-                style={inputReadonly}
-              />
-            )}
+               <input
+                 value={user.district || "Not set"}
+                 readOnly
+                 className={inputReadonlyClasses}
+               />
+             )}
           </Field>
 
           {/* Upazila */}
           <Field icon={MapPinned} label="Upazila">
             {editing ? (
-              <div style={{ position: "relative" }}>
+              <div className="relative">
                 <select
                   value={upazila}
                   onChange={(e) => setUpazila(e.target.value)}
                   disabled={!district}
-                  style={selectStyle(!!district)}
+                  className={selectClasses(!!district)}
                 >
                   {[
                     <option key="__upazila" value="">Select upazila</option>,
@@ -444,22 +418,20 @@ export default function ProfilePage() {
                   ]}
                 </select>
                 {district && (
-                  <span style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", pointerEvents: "none", color: "#64748b", fontSize: 12 }}>▾</span>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 text-xs">▾</span>
                 )}
               </div>
             ) : (
-              <input
-                value={user.upazila || "Not set"}
-                readOnly
-                style={inputReadonly}
-              />
-            )}
+               <input
+                 value={user.upazila || "Not set"}
+                 readOnly
+                 className={inputReadonlyClasses}
+               />
+             )}
           </Field>
 
         </div>
       </div>
-
-      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

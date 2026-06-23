@@ -24,31 +24,21 @@ const getId = (user) =>
 const ROWS_PER_PAGE = 8;
 
 const ROLE_COLORS = {
-  admin:     { bg: "rgba(139,92,246,0.15)",  text: "#a78bfa", border: "rgba(139,92,246,0.35)" },
-  volunteer: { bg: "rgba(34,197,94,0.12)",   text: "#4ade80", border: "rgba(34,197,94,0.3)"  },
-  donor:     { bg: "rgba(59,130,246,0.12)",   text: "#60a5fa", border: "rgba(59,130,246,0.3)" },
+  admin:     { bg: "bg-purple-500/15",  text: "text-purple-400", border: "border-purple-500/35" },
+  volunteer: { bg: "bg-green-500/15",   text: "text-green-400",  border: "border-green-500/30"  },
+  donor:     { bg: "bg-blue-500/15",    text: "text-blue-400",   border: "border-blue-500/30" },
 };
 
 const STATUS_COLORS = {
-  active:  { bg: "rgba(34,197,94,0.12)",  text: "#4ade80", border: "rgba(34,197,94,0.3)"  },
-  blocked: { bg: "rgba(239,68,68,0.12)",  text: "#f87171", border: "rgba(239,68,68,0.3)"  },
+  active:  { bg: "bg-green-500/15",  text: "text-green-400", border: "border-green-500/30"  },
+  blocked: { bg: "bg-red-500/15",    text: "text-red-400",   border: "border-red-500/30"  },
 };
 
 // ── Small reusable components ─────────────────────────────────────────────────
 
 function Badge({ label, colors }) {
   return (
-    <span style={{
-      background: colors.bg,
-      color: colors.text,
-      border: `1px solid ${colors.border}`,
-      borderRadius: "9999px",
-      padding: "3px 11px",
-      fontSize: "0.72rem",
-      fontWeight: 600,
-      letterSpacing: "0.04em",
-      textTransform: "capitalize",
-    }}>
+    <span className={`px-3 py-1 rounded-full text-[0.72rem] font-semibold tracking-[0.04em] capitalize border ${colors.bg} ${colors.text} ${colors.border}`}>
       {label}
     </span>
   );
@@ -61,10 +51,7 @@ function UserAvatar({ name, image }) {
 
   if (image) {
     return (
-      <img src={image} alt={name} style={{
-        width: 36, height: 36, borderRadius: "50%", objectFit: "cover",
-        border: "2px solid rgba(148,163,184,0.2)", flexShrink: 0,
-      }} />
+      <img src={image} alt={name} className="w-9 h-9 rounded-full object-cover border-2 border-slate-400/20 shrink-0" />
     );
   }
 
@@ -73,13 +60,8 @@ function UserAvatar({ name, image }) {
     : 200;
 
   return (
-    <div style={{
-      width: 36, height: 36, borderRadius: "50%",
-      background: `hsl(${hue % 360}, 55%, 38%)`,
-      display: "flex", alignItems: "center", justifyContent: "center",
-      color: "#fff", fontWeight: 700, fontSize: "0.78rem",
-      flexShrink: 0, border: "2px solid rgba(148,163,184,0.2)",
-    }}>
+    <div className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-[0.78rem] shrink-0 border-2 border-slate-400/20"
+         style={{ background: `hsl(${hue % 360}, 55%, 38%)` }}>
       {initials}
     </div>
   );
@@ -140,28 +122,18 @@ function ActionDropdown({ user, onStatusToggle, onRoleChange, isBusy }) {
   };
 
   const actions = [
-    isActive  && { key: "block",     label: "Block",          icon: Ban,        color: "#f87171", onClick: () => onStatusToggle(user) },
-    isBlocked && { key: "unblock",   label: "Unblock",        icon: CheckCircle,color: "#4ade80", onClick: () => onStatusToggle(user) },
-    isDonor   && { key: "volunteer", label: "Make Volunteer", icon: UserCheck,  color: "#4ade80", onClick: () => onRoleChange(user, "volunteer") },
-    (isDonor || isVolunteer) && { key: "admin", label: "Make Admin", icon: ShieldCheck, color: "#a78bfa", onClick: () => onRoleChange(user, "admin") },
+    isActive  && { key: "block",     label: "Block",          icon: Ban,        color: "text-red-400", onClick: () => onStatusToggle(user) },
+    isBlocked && { key: "unblock",   label: "Unblock",        icon: CheckCircle,color: "text-green-400", onClick: () => onStatusToggle(user) },
+    isDonor   && { key: "volunteer", label: "Make Volunteer", icon: UserCheck,  color: "text-green-400", onClick: () => onRoleChange(user, "volunteer") },
+    (isDonor || isVolunteer) && { key: "admin", label: "Make Admin", icon: ShieldCheck, color: "text-purple-400", onClick: () => onRoleChange(user, "admin") },
   ].filter(Boolean);
 
   const menu = (
-    <div ref={menuRef} style={{
-      position: "fixed",
-      top: menuPos.top,
-      left: menuPos.left,
-      width: menuPos.width,
-      zIndex: 99999,
-      background: "#111827",
-      border: "1px solid rgba(148,163,184,0.12)",
-      borderRadius: 12,
-      boxShadow: "0 8px 32px rgba(0,0,0,0.7)",
-      overflow: "hidden",
-      animation: "dropIn 0.14s ease",
-    }}>
+    <div ref={menuRef} 
+         className="fixed z-[99999] bg-gray-900 border border-slate-400/10 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.7)] overflow-hidden animate-[dropIn_0.14s_ease]"
+         style={{ top: menuPos.top, left: menuPos.left, width: menuPos.width }}>
       {actions.length === 0 ? (
-        <p style={{ padding: "12px 16px", color: "#64748b", fontSize: "0.8rem", margin: 0 }}>
+        <p className="px-4 py-3 text-slate-500 text-xs m-0">
           No actions available
         </p>
       ) : (
@@ -169,26 +141,10 @@ function ActionDropdown({ user, onStatusToggle, onRoleChange, isBusy }) {
           <button
             key={key}
             onClick={() => { onClick(); setOpen(false); }}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              width: "100%",
-              padding: "10px 16px",
-              border: "none",
-              background: "transparent",
-              color: "#cbd5e1",
-              fontSize: "0.83rem",
-              fontWeight: 500,
-              cursor: "pointer",
-              textAlign: "left",
-              transition: "background 0.12s",
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.color = color; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#cbd5e1"; }}
+            className={`w-full flex items-center gap-2.5 px-4 py-2.5 bg-transparent border-none text-slate-300 text-[0.83rem] font-medium cursor-pointer text-left transition-colors hover:bg-white/5 hover:${color} group`}
           >
-            <Icon size={14} style={{ color, flexShrink: 0 }} />
-            {label}
+            <Icon size={14} className={`shrink-0 group-hover:${color}`} />
+            <span className={`group-hover:${color}`}>{label}</span>
           </button>
         ))
       )}
@@ -196,9 +152,8 @@ function ActionDropdown({ user, onStatusToggle, onRoleChange, isBusy }) {
   );
 
   return (
-    <div style={{ display: "inline-block" }}>
+    <div className="inline-block">
       <style>{`
-        @keyframes spin    { to { transform: rotate(360deg); } }
         @keyframes dropIn  { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
       <button
@@ -206,24 +161,10 @@ function ActionDropdown({ user, onStatusToggle, onRoleChange, isBusy }) {
         onClick={handleToggle}
         disabled={isBusy}
         title="Actions"
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: 34,
-          height: 34,
-          borderRadius: 8,
-          border: "1px solid rgba(148,163,184,0.15)",
-          background: open ? "rgba(255,255,255,0.07)" : "transparent",
-          color: isBusy ? "rgba(148,163,184,0.35)" : "#94a3b8",
-          cursor: isBusy ? "not-allowed" : "pointer",
-          transition: "background 0.15s, color 0.15s",
-        }}
-        onMouseEnter={(e) => { if (!isBusy) e.currentTarget.style.background = "rgba(255,255,255,0.07)"; }}
-        onMouseLeave={(e) => { if (!open) e.currentTarget.style.background = "transparent"; }}
+        className={`flex items-center justify-center w-[34px] h-[34px] rounded-lg border border-slate-400/15 transition-colors duration-150 ${open ? 'bg-white/5' : 'bg-transparent'} ${isBusy ? 'text-slate-400/35 cursor-not-allowed' : 'text-slate-400 cursor-pointer hover:bg-white/5'}`}
       >
         {isBusy
-          ? <div style={{ width: 14, height: 14, border: "2px solid rgba(148,163,184,0.2)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+          ? <div className="w-3.5 h-3.5 rounded-full border-2 border-slate-400/20 border-t-red-500 animate-[spin_0.7s_linear_infinite]" />
           : <MoreVertical size={16} />}
       </button>
       {open && mounted && createPortal(menu, document.body)}
@@ -290,17 +231,16 @@ export function UserTable() {
 
   if (loading) {
     return (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14, color: "#94a3b8", padding: "60px 0", minHeight: 200 }}>
-        <div style={{ width: 36, height: 36, border: "3px solid rgba(148,163,184,0.15)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-        <span style={{ fontSize: "0.9rem", letterSpacing: "0.02em" }}>Loading users…</span>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      <div className="flex flex-col items-center justify-center gap-3.5 text-slate-400 py-15 min-h-[200px]">
+        <div className="w-9 h-9 rounded-full border-[3px] border-slate-400/15 border-t-red-500 animate-[spin_0.8s_linear_infinite]" />
+        <span className="text-[0.9rem] tracking-[0.02em]">Loading users…</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", color: "#f87171", padding: "40px 0", fontSize: "0.95rem", gap: 8 }}>
+      <div className="flex items-center justify-center text-red-400 py-10 text-[0.95rem] gap-2">
         ⚠ {error}
       </div>
     );
@@ -313,17 +253,7 @@ export function UserTable() {
     return (
       <button
         onClick={() => { setFilter(val); setPage(1); }}
-        style={{
-          padding: "6px 18px",
-          borderRadius: 8,
-          border: isActive ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(148,163,184,0.15)",
-          background: isActive ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.03)",
-          color: isActive ? "#f87171" : "#94a3b8",
-          fontWeight: isActive ? 700 : 500,
-          fontSize: "0.82rem",
-          cursor: "pointer",
-          transition: "all 0.18s ease",
-        }}
+        className={`px-[18px] py-1.5 rounded-lg border text-[0.82rem] cursor-pointer transition-all duration-150 ${isActive ? 'border-red-500/50 bg-red-500/15 text-red-400 font-bold' : 'border-slate-400/15 bg-white/5 text-slate-400 font-medium'}`}
       >
         {label}
       </button>
@@ -331,18 +261,18 @@ export function UserTable() {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+    <div className="flex flex-col gap-4">
 
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#e2e8f0" }}>
-          <Users size={18} color="#ef4444" />
-          <span style={{ fontWeight: 600, fontSize: "0.95rem" }}>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div className="flex items-center gap-2 text-slate-200">
+          <Users size={18} className="text-red-500" />
+          <span className="font-semibold text-[0.95rem]">
             {filtered.length} user{filtered.length !== 1 ? "s" : ""}
           </span>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <Filter size={14} color="#64748b" />
+        <div className="flex items-center gap-2">
+          <Filter size={14} className="text-slate-500" />
           <FilterBtn val="all"     label="All"     />
           <FilterBtn val="active"  label="Active"  />
           <FilterBtn val="blocked" label="Blocked" />
@@ -350,17 +280,12 @@ export function UserTable() {
       </div>
 
       {/* Table */}
-      <div style={{ overflowX: "auto", borderRadius: 14, border: "1px solid rgba(148,163,184,0.1)" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 700, fontSize: "0.875rem" }}>
+      <div className="overflow-x-auto rounded-[14px] border border-slate-400/10">
+        <table className="w-full border-collapse min-w-[700px] text-sm">
           <thead>
-            <tr style={{ background: "rgba(15,23,42,0.8)", borderBottom: "1px solid rgba(148,163,184,0.12)" }}>
+            <tr className="bg-slate-900/80 border-b border-slate-400/10">
               {["User", "Email", "Role", "Status", "Actions"].map((h) => (
-                <th key={h} style={{
-                  padding: "13px 16px", textAlign: "left",
-                  color: "#64748b", fontWeight: 600,
-                  fontSize: "0.72rem", letterSpacing: "0.06em",
-                  textTransform: "uppercase", whiteSpace: "nowrap",
-                }}>
+                <th key={h} className="px-4 py-[13px] text-left text-slate-500 font-semibold text-[0.72rem] tracking-[0.06em] uppercase whitespace-nowrap">
                   {h}
                 </th>
               ))}
@@ -370,7 +295,7 @@ export function UserTable() {
           <tbody>
             {pageUsers.length === 0 ? (
               <tr>
-                <td colSpan={5} style={{ padding: "48px 16px", textAlign: "center", color: "#475569" }}>
+                <td colSpan={5} className="py-12 px-4 text-center text-slate-600">
                   No users found.
                 </td>
               </tr>
@@ -381,37 +306,31 @@ export function UserTable() {
               return (
                 <tr
                   key={id || idx}
-                  style={{
-                    borderBottom: "1px solid rgba(148,163,184,0.07)",
-                    background: idx % 2 === 0 ? "rgba(15,23,42,0.4)" : "rgba(15,23,42,0.25)",
-                    transition: "background 0.15s",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(30,41,59,0.8)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.background = idx % 2 === 0 ? "rgba(15,23,42,0.4)" : "rgba(15,23,42,0.25)")}
+                  className={`border-b border-slate-400/[0.07] transition-colors hover:bg-slate-800/80 ${idx % 2 === 0 ? 'bg-slate-900/40' : 'bg-slate-900/25'}`}
                 >
                   {/* User */}
-                  <td style={{ padding: "12px 16px" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <td className="p-3 px-4">
+                    <div className="flex items-center gap-2.5">
                       <UserAvatar name={user.name} image={user.image} />
-                      <span style={{ color: "#e2e8f0", fontWeight: 500 }}>{user.name ?? "—"}</span>
+                      <span className="text-slate-200 font-medium">{user.name ?? "—"}</span>
                     </div>
                   </td>
 
                   {/* Email */}
-                  <td style={{ padding: "12px 16px", color: "#94a3b8" }}>{user.email ?? "—"}</td>
+                  <td className="p-3 px-4 text-slate-400">{user.email ?? "—"}</td>
 
                   {/* Role */}
-                  <td style={{ padding: "12px 16px" }}>
+                  <td className="p-3 px-4">
                     <Badge label={user.role ?? "donor"} colors={ROLE_COLORS[user.role] ?? ROLE_COLORS.donor} />
                   </td>
 
                   {/* Status */}
-                  <td style={{ padding: "12px 16px" }}>
+                  <td className="p-3 px-4">
                     <Badge label={user.status ?? "active"} colors={STATUS_COLORS[user.status] ?? STATUS_COLORS.active} />
                   </td>
 
                   {/* Actions — 3-dot dropdown */}
-                  <td style={{ padding: "12px 16px" }}>
+                  <td className="p-3 px-4">
                     <ActionDropdown
                       user={user}
                       isBusy={isBusy}
@@ -428,24 +347,17 @@ export function UserTable() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, padding: "6px 0" }}>
-          <span style={{ color: "#64748b", fontSize: "0.8rem" }}>Page {safePage} of {totalPages}</span>
+        <div className="flex items-center justify-between flex-wrap gap-2 py-1.5">
+          <span className="text-slate-500 text-xs">Page {safePage} of {totalPages}</span>
 
-          <div style={{ display: "flex", gap: 6 }}>
+          <div className="flex gap-1.5">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => {
               const isActive = p === safePage;
               return (
                 <button
                   key={p}
                   onClick={() => setPage(p)}
-                  style={{
-                    width: 32, height: 32, borderRadius: 8,
-                    border: isActive ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(148,163,184,0.12)",
-                    background: isActive ? "rgba(239,68,68,0.15)" : "transparent",
-                    color: isActive ? "#f87171" : "#94a3b8",
-                    fontWeight: isActive ? 700 : 500,
-                    fontSize: "0.82rem", cursor: "pointer", transition: "all 0.15s",
-                  }}
+                  className={`w-8 h-8 rounded-lg border text-[0.82rem] cursor-pointer transition-all duration-150 ${isActive ? 'border-red-500/50 bg-red-500/15 text-red-400 font-bold' : 'border-slate-400/10 bg-transparent text-slate-400 font-medium'}`}
                 >
                   {p}
                 </button>
@@ -453,18 +365,18 @@ export function UserTable() {
             })}
           </div>
 
-          <div style={{ display: "flex", gap: 6 }}>
+          <div className="flex gap-1.5">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={safePage === 1}
-              style={{ padding: "5px 10px", borderRadius: 8, border: "1px solid rgba(148,163,184,0.12)", background: "transparent", color: safePage === 1 ? "rgba(148,163,184,0.3)" : "#94a3b8", cursor: safePage === 1 ? "not-allowed" : "pointer" }}
+              className={`px-2.5 py-1 rounded-lg border border-slate-400/10 bg-transparent ${safePage === 1 ? 'text-slate-400/30 cursor-not-allowed' : 'text-slate-400 cursor-pointer'}`}
             >
               <ChevronLeft size={15} />
             </button>
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={safePage === totalPages}
-              style={{ padding: "5px 10px", borderRadius: 8, border: "1px solid rgba(148,163,184,0.12)", background: "transparent", color: safePage === totalPages ? "rgba(148,163,184,0.3)" : "#94a3b8", cursor: safePage === totalPages ? "not-allowed" : "pointer" }}
+              className={`px-2.5 py-1 rounded-lg border border-slate-400/10 bg-transparent ${safePage === totalPages ? 'text-slate-400/30 cursor-not-allowed' : 'text-slate-400 cursor-pointer'}`}
             >
               <ChevronRight size={15} />
             </button>

@@ -41,109 +41,104 @@ function formatDate(d) {
 // ── Card Component ────────────────────────────────────────────────────────────
 
 function RequestCard({ req, onView }) {
-  const [hovered, setHovered] = useState(false);
   const bloodColor = BLOOD_COLORS[req.bloodGroup] ?? "#f87171";
 
   return (
     <div
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
+      className="group relative flex flex-col gap-3.5 p-[24px_22px] rounded-[18px] bg-slate-900/75 border border-slate-400/10 backdrop-blur-md overflow-hidden cursor-default transition-all duration-200 hover:-translate-y-[3px]"
       style={{
-        background: hovered
-          ? "rgba(20,30,55,0.95)"
-          : "rgba(15,23,42,0.75)",
-        border: hovered
-          ? `1px solid ${bloodColor}55`
-          : "1px solid rgba(148,163,184,0.1)",
-        borderRadius: 18,
-        padding: "24px 22px",
-        backdropFilter: "blur(12px)",
-        display: "flex", flexDirection: "column", gap: 14,
-        transition: "all 0.22s ease",
-        boxShadow: hovered ? `0 8px 32px rgba(0,0,0,0.4)` : "none",
-        transform: hovered ? "translateY(-3px)" : "translateY(0)",
-        cursor: "default",
-        position: "relative", overflow: "hidden",
+        "--hover-bg": "rgba(20,30,55,0.95)",
+        "--hover-border": `${bloodColor}55`,
+        "--hover-shadow": "0 8px 32px rgba(0,0,0,0.4)",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.background = e.currentTarget.style.getPropertyValue('--hover-bg');
+        e.currentTarget.style.borderColor = e.currentTarget.style.getPropertyValue('--hover-border');
+        e.currentTarget.style.boxShadow = e.currentTarget.style.getPropertyValue('--hover-shadow');
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.background = "rgba(15,23,42,0.75)";
+        e.currentTarget.style.borderColor = "rgba(148,163,184,0.1)";
+        e.currentTarget.style.boxShadow = "none";
       }}
     >
       {/* Top accent line */}
-      <div style={{
-        position: "absolute", top: 0, left: 0, right: 0, height: 3,
-        background: `linear-gradient(90deg, ${bloodColor}, ${bloodColor}88)`,
-        borderRadius: "18px 18px 0 0",
-      }} />
+      <div 
+        className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[18px]" 
+        style={{ background: `linear-gradient(90deg, ${bloodColor}, ${bloodColor}88)` }} 
+      />
 
       {/* Blood group badge */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <span style={{
-          background: `${bloodColor}1a`, color: bloodColor,
-          border: `1px solid ${bloodColor}55`,
-          borderRadius: 10, padding: "5px 14px",
-          fontSize: "1rem", fontWeight: 900, letterSpacing: "0.04em",
-        }}>
+      <div className="flex items-center justify-between">
+        <span 
+          className="px-3.5 py-[5px] rounded-[10px] text-base font-black tracking-[0.04em]"
+          style={{ background: `${bloodColor}1a`, color: bloodColor, border: `1px solid ${bloodColor}55` }}
+        >
           {req.bloodGroup ?? "—"}
         </span>
-        <span style={{
-          background: "rgba(251,191,36,0.12)", color: "#fbbf24",
-          border: "1px solid rgba(251,191,36,0.3)",
-          borderRadius: 9999, padding: "3px 10px",
-          fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.06em",
-          textTransform: "uppercase",
-        }}>
+        <span className="px-2.5 py-[3px] rounded-full text-[0.68rem] font-bold tracking-[0.06em] uppercase bg-amber-400/10 text-amber-400 border border-amber-400/30">
           Pending
         </span>
       </div>
 
       {/* Recipient Name */}
       <div>
-        <p style={{ margin: 0, fontSize: "0.68rem", color: "#64748b", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 3 }}>
+        <p className="m-0 mb-[3px] text-[0.68rem] font-semibold text-slate-500 tracking-[0.06em] uppercase">
           Recipient
         </p>
-        <p style={{ margin: 0, fontSize: "1rem", fontWeight: 700, color: "#f1f5f9", lineHeight: 1.3 }}>
+        <p className="m-0 text-base font-bold text-slate-100 leading-[1.3]">
           {req.recipientName ?? "—"}
         </p>
       </div>
 
       {/* Location */}
-      <div style={{ display: "flex", alignItems: "flex-start", gap: 7 }}>
-        <MapPin size={14} color="#64748b" style={{ marginTop: 2, flexShrink: 0 }} />
+      <div className="flex items-start gap-[7px]">
+        <MapPin size={14} className="text-slate-500 mt-[2px] shrink-0" />
         <div>
-          <p style={{ margin: 0, fontSize: "0.68rem", color: "#64748b", fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 2 }}>Location</p>
-          <p style={{ margin: 0, fontSize: "0.875rem", color: "#94a3b8" }}>
+          <p className="m-0 mb-[2px] text-[0.68rem] font-semibold text-slate-500 tracking-[0.06em] uppercase">
+            Location
+          </p>
+          <p className="m-0 text-[0.875rem] text-slate-400">
             {[req.recipientDistrict, req.recipientUpazila].filter(Boolean).join(", ") || "—"}
           </p>
         </div>
       </div>
 
       {/* Date & Time */}
-      <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <CalendarDays size={14} color="#64748b" />
-          <span style={{ fontSize: "0.82rem", color: "#94a3b8" }}>{formatDate(req.donationDate)}</span>
+      <div className="flex gap-4 flex-wrap">
+        <div className="flex items-center gap-1.5">
+          <CalendarDays size={14} className="text-slate-500" />
+          <span className="text-[0.82rem] text-slate-400">{formatDate(req.donationDate)}</span>
         </div>
         {req.donationTime && (
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <Clock size={14} color="#64748b" />
-            <span style={{ fontSize: "0.82rem", color: "#94a3b8" }}>{req.donationTime}</span>
+          <div className="flex items-center gap-1.5">
+            <Clock size={14} className="text-slate-500" />
+            <span className="text-[0.82rem] text-slate-400">{req.donationTime}</span>
           </div>
         )}
       </div>
 
       {/* Divider */}
-      <div style={{ height: 1, background: "rgba(148,163,184,0.08)" }} />
+      <div className="h-px bg-slate-400/10" />
 
       {/* View Button */}
       <button
         onClick={() => onView(getId(req))}
+        className="flex items-center justify-center gap-[7px] w-full py-2.5 rounded-[10px] text-[0.875rem] font-bold tracking-[0.02em] cursor-pointer transition-all duration-200 border bg-white/5 border-slate-400/15 text-slate-400 group-hover:bg-opacity-10"
         style={{
-          display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-          width: "100%", padding: "10px 0", borderRadius: 10,
-          background: hovered ? `${bloodColor}22` : "rgba(255,255,255,0.04)",
-          border: hovered ? `1px solid ${bloodColor}55` : "1px solid rgba(148,163,184,0.15)",
-          color: hovered ? bloodColor : "#94a3b8",
-          fontSize: "0.875rem", fontWeight: 700,
-          cursor: "pointer", transition: "all 0.2s ease",
-          letterSpacing: "0.02em",
+          "--btn-hover-bg": `${bloodColor}22`,
+          "--btn-hover-border": `${bloodColor}55`,
+          "--btn-hover-color": bloodColor,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.background = e.currentTarget.style.getPropertyValue('--btn-hover-bg');
+          e.currentTarget.style.borderColor = e.currentTarget.style.getPropertyValue('--btn-hover-border');
+          e.currentTarget.style.color = e.currentTarget.style.getPropertyValue('--btn-hover-color');
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.background = "rgba(255,255,255,0.04)";
+          e.currentTarget.style.borderColor = "rgba(148,163,184,0.15)";
+          e.currentTarget.style.color = "#94a3b8";
         }}
       >
         <Eye size={15} /> View Details
@@ -211,83 +206,57 @@ export default function DonationRequestsPage() {
   // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: "linear-gradient(135deg, #0a0f1e 0%, #0d1526 50%, #0a0f1e 100%)",
-      padding: "48px 20px 60px",
-      fontFamily: "'Inter', 'Outfit', sans-serif",
-    }}>
+    <div className="min-h-screen bg-[linear-gradient(135deg,#0a0f1e_0%,#0d1526_50%,#0a0f1e_100%)] pt-12 px-5 pb-[60px] font-sans text-slate-100">
       <style>{`
-        @keyframes spin   { to { transform: rotate(360deg); } }
         @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
-        ::placeholder { color: #475569 !important; }
       `}</style>
 
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+      <div className="max-w-[1100px] mx-auto">
 
         {/* ── Page Header ── */}
-        <div style={{ textAlign: "center", marginBottom: 40, animation: "fadeUp 0.4s ease" }}>
-          <div style={{
-            display: "inline-flex", alignItems: "center", gap: 8,
-            background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.25)",
-            borderRadius: 9999, padding: "6px 18px", marginBottom: 18,
-          }}>
-            <Droplets size={14} color="#f87171" />
-            <span style={{ color: "#f87171", fontSize: "0.78rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+        <div className="text-center mb-10 animate-[fadeUp_0.4s_ease]">
+          <div className="inline-flex items-center gap-2 bg-red-500/10 border border-red-500/25 rounded-full px-[18px] py-1.5 mb-[18px]">
+            <Droplets size={14} className="text-red-400" />
+            <span className="text-red-400 text-[0.78rem] font-bold tracking-[0.06em] uppercase">
               Blood Donation Requests
             </span>
           </div>
-          <h1 style={{ margin: "0 0 12px", fontSize: "clamp(1.8rem, 4vw, 2.6rem)", fontWeight: 800, color: "#f1f5f9", letterSpacing: "-0.03em", lineHeight: 1.2 }}>
+          <h1 className="m-0 mb-3 text-[clamp(1.8rem,4vw,2.6rem)] font-extrabold text-slate-100 tracking-[0.03em] leading-[1.2]">
             Help Save a Life Today
           </h1>
-          <p style={{ margin: 0, color: "#64748b", fontSize: "1rem", maxWidth: 520, marginInline: "auto", lineHeight: 1.6 }}>
+          <p className="m-0 text-slate-500 text-base max-w-[520px] mx-auto leading-relaxed">
             Browse all active blood donation requests. Click "View Details" to learn more and reach out to help.
           </p>
         </div>
 
         {/* ── Filters ── */}
-        <div style={{
-          display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center",
-          marginBottom: 28, animation: "fadeUp 0.4s ease 0.1s both",
-        }}>
+        <div className="flex gap-3 flex-wrap items-center mb-7 animate-[fadeUp_0.4s_ease_0.1s_both]">
           {/* Search */}
-          <div style={{ position: "relative", flex: "1 1 240px" }}>
-            <Search size={15} color="#64748b" style={{ position: "absolute", left: 13, top: "50%", transform: "translateY(-50%)", pointerEvents: "none" }} />
+          <div className="relative flex-[1_1_240px]">
+            <Search size={15} className="absolute left-[13px] top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" />
             <input
               type="text"
               value={search}
               onChange={(e) => handleSearch(e.target.value)}
               placeholder="Search by name or location…"
-              style={{
-                width: "100%", padding: "10px 14px 10px 38px",
-                background: "rgba(15,23,42,0.8)", border: "1px solid rgba(148,163,184,0.15)",
-                borderRadius: 10, color: "#f1f5f9", fontSize: "0.875rem",
-                outline: "none", boxSizing: "border-box", fontFamily: "inherit",
-              }}
-              onFocus={(e) => e.target.style.borderColor = "rgba(239,68,68,0.5)"}
-              onBlur={(e) => e.target.style.borderColor = "rgba(148,163,184,0.15)"}
+              className="w-full p-[10px_14px_10px_38px] bg-slate-900/80 border border-slate-400/15 rounded-[10px] text-slate-100 text-[0.875rem] outline-none font-inherit placeholder:text-slate-500 focus:border-red-500/50 transition-colors"
             />
           </div>
 
           {/* Blood group filter */}
-          <div style={{ display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap" }}>
-            <Filter size={13} color="#64748b" />
+          <div className="flex items-center gap-[7px] flex-wrap">
+            <Filter size={13} className="text-slate-500" />
             <button
               onClick={() => handleFilter("all")}
-              style={{
-                padding: "7px 14px", borderRadius: 8, fontSize: "0.8rem", fontWeight: 600, cursor: "pointer",
-                border: bloodFilter === "all" ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(148,163,184,0.15)",
-                background: bloodFilter === "all" ? "rgba(239,68,68,0.15)" : "rgba(255,255,255,0.03)",
-                color: bloodFilter === "all" ? "#f87171" : "#94a3b8",
-              }}
+              className={`px-3.5 py-[7px] rounded-lg text-[0.8rem] font-bold cursor-pointer border transition-colors ${bloodFilter === "all" ? 'border-red-500/50 bg-red-500/15 text-red-400' : 'border-slate-400/15 bg-white/5 text-slate-500'}`}
             >All</button>
             {BLOOD_GROUPS.map((bg) => {
               const c = BLOOD_COLORS[bg];
               const active = bloodFilter === bg;
               return (
                 <button key={bg} onClick={() => handleFilter(bg)}
+                  className="px-3 py-[7px] rounded-lg text-[0.8rem] font-bold cursor-pointer border transition-colors"
                   style={{
-                    padding: "7px 12px", borderRadius: 8, fontSize: "0.8rem", fontWeight: 700, cursor: "pointer",
                     border: active ? `1px solid ${c}66` : "1px solid rgba(148,163,184,0.15)",
                     background: active ? `${c}1a` : "rgba(255,255,255,0.03)",
                     color: active ? c : "#94a3b8",
@@ -300,8 +269,8 @@ export default function DonationRequestsPage() {
 
         {/* Result count */}
         {!loading && !error && (
-          <p style={{ color: "#64748b", fontSize: "0.82rem", marginBottom: 20, animation: "fadeUp 0.4s ease 0.15s both" }}>
-            Showing <strong style={{ color: "#e2e8f0" }}>{filtered.length}</strong> pending request{filtered.length !== 1 ? "s" : ""}
+          <p className="text-slate-500 text-[0.82rem] mb-5 animate-[fadeUp_0.4s_ease_0.15s_both]">
+            Showing <strong className="text-slate-200">{filtered.length}</strong> pending request{filtered.length !== 1 ? "s" : ""}
             {bloodFilter !== "all" ? ` · Blood group: ${bloodFilter}` : ""}
             {search ? ` · "${search}"` : ""}
           </p>
@@ -309,32 +278,27 @@ export default function DonationRequestsPage() {
 
         {/* ── Loading ── */}
         {loading && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, padding: "80px 0", color: "#94a3b8" }}>
-            <div style={{ width: 40, height: 40, border: "3px solid rgba(148,163,184,0.15)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-            <span style={{ fontSize: "0.95rem" }}>Loading donation requests…</span>
+          <div className="flex flex-col items-center gap-4 py-20 text-slate-500">
+            <div className="w-10 h-10 border-[3px] border-slate-400/15 border-t-red-500 rounded-full animate-[spin_0.8s_linear_infinite]" />
+            <span className="text-[0.95rem]">Loading donation requests…</span>
           </div>
         )}
 
         {/* ── Error ── */}
         {!loading && error && (
-          <div style={{ textAlign: "center", padding: "60px 0", color: "#f87171", fontSize: "0.95rem" }}>
+          <div className="text-center py-15 text-red-400 text-[0.95rem]">
             ⚠ {error}
           </div>
         )}
 
         {/* ── Empty ── */}
         {!loading && !error && filtered.length === 0 && (
-          <div style={{ textAlign: "center", padding: "80px 20px" }}>
-            <div style={{
-              width: 60, height: 60, borderRadius: "50%",
-              background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              margin: "0 auto 18px",
-            }}>
-              <Droplets size={26} color="rgba(239,68,68,0.5)" />
+          <div className="text-center py-20 px-5">
+            <div className="w-15 h-15 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-4.5">
+              <Droplets size={26} className="text-red-500/50" />
             </div>
-            <h3 style={{ margin: "0 0 8px", color: "#f1f5f9", fontWeight: 700 }}>No Requests Found</h3>
-            <p style={{ margin: 0, color: "#64748b", fontSize: "0.875rem" }}>
+            <h3 className="m-0 mb-2 text-slate-100 font-bold">No Requests Found</h3>
+            <p className="m-0 text-slate-500 text-[0.875rem]">
               {bloodFilter !== "all" || search
                 ? "Try adjusting your filters."
                 : "There are no pending donation requests at the moment."}
@@ -344,12 +308,7 @@ export default function DonationRequestsPage() {
 
         {/* ── Card Grid ── */}
         {!loading && !error && pageItems.length > 0 && (
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-            gap: 20,
-            animation: "fadeUp 0.4s ease 0.2s both",
-          }}>
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-5 animate-[fadeUp_0.4s_ease_0.2s_both]">
             {pageItems.map((req) => (
               <RequestCard key={getId(req)} req={req} onView={handleView} />
             ))}
@@ -358,14 +317,11 @@ export default function DonationRequestsPage() {
 
         {/* ── Pagination ── */}
         {!loading && !error && totalPages > 1 && (
-          <div style={{
-            display: "flex", alignItems: "center", justifyContent: "center",
-            gap: 8, marginTop: 36, flexWrap: "wrap",
-          }}>
+          <div className="flex items-center justify-center gap-2 mt-9 flex-wrap">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={safePage === 1}
-              style={{ padding: "7px 12px", borderRadius: 8, border: "1px solid rgba(148,163,184,0.15)", background: "transparent", color: safePage === 1 ? "rgba(148,163,184,0.3)" : "#94a3b8", cursor: safePage === 1 ? "not-allowed" : "pointer" }}
+              className={`px-3 py-[7px] rounded-lg border border-slate-400/15 bg-transparent ${safePage === 1 ? 'text-slate-400/30 cursor-not-allowed' : 'text-slate-500 cursor-pointer'}`}
             >
               <ChevronLeft size={16} />
             </button>
@@ -374,13 +330,7 @@ export default function DonationRequestsPage() {
               const active = p === safePage;
               return (
                 <button key={p} onClick={() => setPage(p)}
-                  style={{
-                    width: 36, height: 36, borderRadius: 8, fontSize: "0.85rem", fontWeight: active ? 700 : 500, cursor: "pointer",
-                    border: active ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(148,163,184,0.12)",
-                    background: active ? "rgba(239,68,68,0.15)" : "transparent",
-                    color: active ? "#f87171" : "#94a3b8",
-                    transition: "all 0.15s",
-                  }}
+                  className={`w-9 h-9 rounded-lg text-[0.85rem] font-medium cursor-pointer border transition-colors ${active ? 'border-red-500/50 bg-red-500/15 text-red-400 font-bold' : 'border-slate-400/10 bg-transparent text-slate-500'}`}
                 >{p}</button>
               );
             })}
@@ -388,7 +338,7 @@ export default function DonationRequestsPage() {
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={safePage === totalPages}
-              style={{ padding: "7px 12px", borderRadius: 8, border: "1px solid rgba(148,163,184,0.15)", background: "transparent", color: safePage === totalPages ? "rgba(148,163,184,0.3)" : "#94a3b8", cursor: safePage === totalPages ? "not-allowed" : "pointer" }}
+              className={`px-3 py-[7px] rounded-lg border border-slate-400/15 bg-transparent ${safePage === totalPages ? 'text-slate-400/30 cursor-not-allowed' : 'text-slate-500 cursor-pointer'}`}
             >
               <ChevronRight size={16} />
             </button>

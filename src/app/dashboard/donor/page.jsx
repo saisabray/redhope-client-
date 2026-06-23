@@ -16,10 +16,10 @@ import {
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
 const STATUS_COLORS = {
-  pending:    { bg: "rgba(251,191,36,0.12)",  text: "#fbbf24", border: "rgba(251,191,36,0.35)",  label: "Pending"     },
-  inprogress: { bg: "rgba(59,130,246,0.12)",  text: "#60a5fa", border: "rgba(59,130,246,0.35)",  label: "In Progress" },
-  done:       { bg: "rgba(34,197,94,0.12)",   text: "#4ade80", border: "rgba(34,197,94,0.3)",    label: "Done"        },
-  canceled:   { bg: "rgba(239,68,68,0.12)",   text: "#f87171", border: "rgba(239,68,68,0.3)",    label: "Canceled"    },
+  pending:    { bg: "bg-amber-400/10",  text: "text-amber-400", border: "border-amber-400/35",  label: "Pending"     },
+  inprogress: { bg: "bg-blue-500/10",  text: "text-blue-400", border: "border-blue-500/35",  label: "In Progress" },
+  done:       { bg: "bg-green-500/10",   text: "text-green-400", border: "border-green-500/30",    label: "Done"        },
+  canceled:   { bg: "bg-red-500/10",   text: "text-red-400", border: "border-red-500/30",    label: "Canceled"    },
 };
 
 const BLOOD_COLORS = {
@@ -47,23 +47,21 @@ function formatDate(d) {
 function StatusBadge({ status }) {
   const c = STATUS_COLORS[status] ?? STATUS_COLORS.pending;
   return (
-    <span style={{
-      background: c.bg, color: c.text, border: `1px solid ${c.border}`,
-      borderRadius: 9999, padding: "3px 11px",
-      fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.04em",
-      whiteSpace: "nowrap",
-    }}>{c.label}</span>
+    <span className={`px-[11px] py-[3px] rounded-full text-[0.72rem] font-bold tracking-[0.04em] whitespace-nowrap border ${c.bg} ${c.text} ${c.border}`}>
+      {c.label}
+    </span>
   );
 }
 
 function BloodBadge({ group }) {
   const color = BLOOD_COLORS[group] ?? "#f87171";
   return (
-    <span style={{
-      background: `${color}18`, color, border: `1px solid ${color}55`,
-      borderRadius: 8, padding: "3px 10px",
-      fontSize: "0.78rem", fontWeight: 800, letterSpacing: "0.04em",
-    }}>{group}</span>
+    <span 
+      className="px-2.5 py-[3px] rounded-lg text-[0.78rem] font-extrabold tracking-[0.04em]"
+      style={{
+        background: `${color}18`, color, border: `1px solid ${color}55`,
+      }}
+    >{group}</span>
   );
 }
 
@@ -72,40 +70,30 @@ function BloodBadge({ group }) {
 function DeleteModal({ request, onConfirm, onCancel, loading }) {
   if (!request) return null;
   const modal = (
-    <div style={{
-      position: "fixed", inset: 0, zIndex: 9999,
-      background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)",
-      display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
-    }}>
-      <div style={{
-        background: "#111827", border: "1px solid rgba(148,163,184,0.12)",
-        borderRadius: 18, padding: "32px 28px", maxWidth: 420, width: "100%",
-        boxShadow: "0 24px 64px rgba(0,0,0,0.6)", animation: "fadeUp 0.2s ease",
-      }}>
-        <div style={{
-          width: 52, height: 52, borderRadius: "50%",
-          background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.3)",
-          display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 18px",
-        }}>
-          <Trash2 size={22} color="#f87171" />
+    <div className="fixed inset-0 z-[9999] bg-black/65 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-gray-900 border border-slate-400/10 rounded-[18px] p-[32px_28px] w-full max-w-[420px] shadow-[0_24px_64px_rgba(0,0,0,0.6)] animate-[fadeUp_0.2s_ease]">
+        <div className="w-[52px] h-[52px] rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center mx-auto mb-4.5">
+          <Trash2 size={22} className="text-red-400" />
         </div>
-        <h3 style={{ margin: "0 0 8px", fontSize: "1.1rem", fontWeight: 700, color: "#f1f5f9", textAlign: "center" }}>
+        <h3 className="m-0 mb-2 text-[1.1rem] font-bold text-slate-100 text-center">
           Delete Request?
         </h3>
-        <p style={{ margin: "0 0 24px", color: "#94a3b8", fontSize: "0.875rem", textAlign: "center", lineHeight: 1.6 }}>
+        <p className="m-0 mb-6 text-slate-400 text-[0.875rem] text-center leading-relaxed">
           Permanently delete the request for{" "}
-          <strong style={{ color: "#e2e8f0" }}>{request.recipientName}</strong>?
+          <strong className="text-slate-200">{request.recipientName}</strong>?
           This cannot be undone.
         </p>
-        <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+        <div className="flex gap-2.5 justify-center">
           <button onClick={onCancel} disabled={loading}
-            style={{ padding: "9px 22px", borderRadius: 10, border: "1px solid rgba(148,163,184,0.18)", background: "rgba(255,255,255,0.04)", color: "#94a3b8", fontSize: "0.875rem", fontWeight: 600, cursor: "pointer" }}>
+            className="px-[22px] py-[9px] rounded-[10px] border border-slate-400/20 bg-white/5 text-slate-400 text-[0.875rem] font-semibold cursor-pointer transition-colors hover:bg-white/10"
+          >
             Cancel
           </button>
           <button onClick={onConfirm} disabled={loading}
-            style={{ padding: "9px 22px", borderRadius: 10, border: "1px solid rgba(239,68,68,0.4)", background: "rgba(239,68,68,0.18)", color: "#f87171", fontSize: "0.875rem", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 7, opacity: loading ? 0.7 : 1 }}>
+            className={`flex items-center gap-1.5 px-[22px] py-[9px] rounded-[10px] border border-red-500/40 bg-red-500/20 text-red-400 text-[0.875rem] font-bold transition-all ${loading ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer hover:bg-red-500/30'}`}
+          >
             {loading
-              ? <><div style={{ width: 13, height: 13, border: "2px solid rgba(248,113,113,0.3)", borderTopColor: "#f87171", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Deleting…</>
+              ? <><div className="w-[13px] h-[13px] border-2 border-red-400/30 border-t-red-400 rounded-full animate-[spin_0.7s_linear_infinite]" /> Deleting…</>
               : <><Trash2 size={14} /> Delete</>}
           </button>
         </div>
@@ -168,61 +156,36 @@ function ActionDropdown({ req, onDelete, onStatusChange, busyId, router }) {
   };
 
   const actions = [
-    { key: "view",   label: "View Details", icon: Eye,          color: "#94a3b8", onClick: () => router.push(`/donation-requests/${id}`) },
-    canEdit   && { key: "edit",   label: "Edit",         icon: Pencil,       color: "#60a5fa", onClick: () => router.push(`/dashboard/create-donation-request?edit=${id}`) },
-    canDelete && { key: "delete", label: "Delete",       icon: Trash2,       color: "#f87171", onClick: () => onDelete(req) },
-    isInProgress && { key: "done",   label: "Mark as Done", icon: CheckCircle2, color: "#4ade80", onClick: () => { onStatusChange(id, "done");     setOpen(false); } },
-    isInProgress && { key: "cancel", label: "Cancel",       icon: XCircle,     color: "#f87171", onClick: () => { onStatusChange(id, "canceled"); setOpen(false); } },
+    { key: "view",   label: "View Details", icon: Eye,          color: "text-slate-400", onClick: () => router.push(`/donation-requests/${id}`) },
+    canEdit   && { key: "edit",   label: "Edit",         icon: Pencil,       color: "text-blue-400", onClick: () => router.push(`/dashboard/create-donation-request?edit=${id}`) },
+    canDelete && { key: "delete", label: "Delete",       icon: Trash2,       color: "text-red-400", onClick: () => onDelete(req) },
+    isInProgress && { key: "done",   label: "Mark as Done", icon: CheckCircle2, color: "text-green-400", onClick: () => { onStatusChange(id, "done");     setOpen(false); } },
+    isInProgress && { key: "cancel", label: "Cancel",       icon: XCircle,     color: "text-red-400", onClick: () => { onStatusChange(id, "canceled"); setOpen(false); } },
   ].filter(Boolean);
 
   const menu = (
-    <div ref={menuRef} style={{
-      position: "fixed", top: menuPos.top, left: menuPos.left, width: menuPos.width,
-      zIndex: 99999, background: "#111827",
-      border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12,
-      boxShadow: "0 8px 32px rgba(0,0,0,0.7)", overflow: "hidden",
-      animation: "dropIn 0.14s ease",
-    }}>
+    <div ref={menuRef} className="fixed z-[99999] bg-gray-900 border border-slate-400/10 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.7)] overflow-hidden animate-[dropIn_0.14s_ease]"
+         style={{ top: menuPos.top, left: menuPos.left, width: menuPos.width }}>
       {actions.map(({ key, label, icon: Icon, color, onClick }) => (
         <button key={key}
           onClick={() => { onClick(); setOpen(false); }}
           disabled={isBusy && (key === "done" || key === "cancel")}
-          style={{
-            display: "flex", alignItems: "center", gap: 10,
-            width: "100%", padding: "10px 16px",
-            border: "none", background: "transparent",
-            color: "#cbd5e1", fontSize: "0.83rem", fontWeight: 500,
-            cursor: (isBusy && (key === "done" || key === "cancel")) ? "not-allowed" : "pointer",
-            textAlign: "left", transition: "background 0.12s",
-            opacity: (isBusy && (key === "done" || key === "cancel")) ? 0.5 : 1,
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.color = color; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#cbd5e1"; }}
+          className={`w-full flex items-center gap-2.5 px-4 py-2.5 bg-transparent border-none text-slate-300 text-[0.83rem] font-medium text-left transition-colors group hover:bg-white/5 hover:${color} ${(isBusy && (key === "done" || key === "cancel")) ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
         >
-          <Icon size={14} style={{ color, flexShrink: 0 }} />
-          {label}
+          <Icon size={14} className={`shrink-0 group-hover:${color}`} />
+          <span className={`group-hover:${color}`}>{label}</span>
         </button>
       ))}
     </div>
   );
 
   return (
-    <div style={{ display: "inline-block" }}>
+    <div className="inline-block">
       <button ref={btnRef} onClick={handleToggle} disabled={isBusy}
-        style={{
-          display: "flex", alignItems: "center", justifyContent: "center",
-          width: 34, height: 34, borderRadius: 8,
-          border: "1px solid rgba(148,163,184,0.15)",
-          background: open ? "rgba(255,255,255,0.07)" : "transparent",
-          color: isBusy ? "rgba(148,163,184,0.35)" : "#94a3b8",
-          cursor: isBusy ? "not-allowed" : "pointer",
-          transition: "background 0.15s",
-        }}
-        onMouseEnter={(e) => { if (!isBusy) e.currentTarget.style.background = "rgba(255,255,255,0.07)"; }}
-        onMouseLeave={(e) => { if (!open) e.currentTarget.style.background = "transparent"; }}
+        className={`flex items-center justify-center w-[34px] h-[34px] rounded-lg border border-slate-400/15 transition-colors duration-150 ${open ? 'bg-white/5' : 'bg-transparent hover:bg-white/5'} ${isBusy ? 'text-slate-400/35 cursor-not-allowed' : 'text-slate-400 cursor-pointer'}`}
       >
         {isBusy
-          ? <div style={{ width: 14, height: 14, border: "2px solid rgba(148,163,184,0.2)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+          ? <div className="w-3.5 h-3.5 border-2 border-slate-400/20 border-t-red-500 rounded-full animate-[spin_0.7s_linear_infinite]" />
           : <MoreVertical size={16} />}
       </button>
       {open && mounted && createPortal(menu, document.body)}
@@ -240,35 +203,29 @@ function RequestRow({ req, idx, onDelete, onStatusChange, busyId }) {
   return (
     <>
       <tr
-        style={{
-          borderBottom: "1px solid rgba(148,163,184,0.07)",
-          background: idx % 2 === 0 ? "rgba(15,23,42,0.4)" : "rgba(15,23,42,0.25)",
-          transition: "background 0.15s",
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(30,41,59,0.8)")}
-        onMouseLeave={(e) => (e.currentTarget.style.background = idx % 2 === 0 ? "rgba(15,23,42,0.4)" : "rgba(15,23,42,0.25)")}
+        className={`border-b border-slate-400/[0.07] transition-colors hover:bg-slate-800/80 ${idx % 2 === 0 ? 'bg-slate-900/40' : 'bg-slate-900/25'}`}
       >
         {/* Recipient Name */}
-        <td style={{ padding: "13px 16px" }}>
-          <span style={{ color: "#e2e8f0", fontWeight: 600 }}>{req.recipientName ?? "—"}</span>
+        <td className="p-[13px_16px]">
+          <span className="text-slate-200 font-semibold">{req.recipientName ?? "—"}</span>
         </td>
 
         {/* Location */}
-        <td style={{ padding: "13px 16px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 5, color: "#94a3b8", fontSize: "0.85rem" }}>
-            <MapPin size={13} color="#64748b" />
+        <td className="p-[13px_16px]">
+          <div className="flex items-center gap-1.5 text-slate-400 text-[0.85rem]">
+            <MapPin size={13} className="text-slate-500" />
             <span>{[req.recipientDistrict, req.recipientUpazila].filter(Boolean).join(", ") || "—"}</span>
           </div>
         </td>
 
         {/* Date & Time */}
-        <td style={{ padding: "13px 16px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 5, color: "#94a3b8", fontSize: "0.85rem", whiteSpace: "nowrap" }}>
-            <CalendarDays size={13} color="#64748b" />
+        <td className="p-[13px_16px]">
+          <div className="flex items-center gap-1.5 text-slate-400 text-[0.85rem] whitespace-nowrap">
+            <CalendarDays size={13} className="text-slate-500" />
             {formatDate(req.donationDate)}
           </div>
           {req.donationTime && (
-            <div style={{ display: "flex", alignItems: "center", gap: 5, color: "#64748b", fontSize: "0.75rem", marginTop: 3 }}>
+            <div className="flex items-center gap-1.5 text-slate-500 text-[0.75rem] mt-[3px]">
               <Clock size={11} />
               {req.donationTime}
             </div>
@@ -276,17 +233,17 @@ function RequestRow({ req, idx, onDelete, onStatusChange, busyId }) {
         </td>
 
         {/* Blood Group */}
-        <td style={{ padding: "13px 16px" }}>
+        <td className="p-[13px_16px]">
           <BloodBadge group={req.bloodGroup ?? "—"} />
         </td>
 
         {/* Status */}
-        <td style={{ padding: "13px 16px" }}>
+        <td className="p-[13px_16px]">
           <StatusBadge status={req.status ?? "pending"} />
         </td>
 
         {/* 3-dot Actions */}
-        <td style={{ padding: "13px 16px" }}>
+        <td className="p-[13px_16px]">
           <ActionDropdown
             req={req}
             onDelete={onDelete}
@@ -299,21 +256,21 @@ function RequestRow({ req, idx, onDelete, onStatusChange, busyId }) {
 
       {/* Donor Info row — only when inprogress */}
       {isInProgress && (req.donorName || req.donorEmail) && (
-        <tr style={{ background: "rgba(59,130,246,0.05)", borderBottom: "1px solid rgba(148,163,184,0.07)" }}>
-          <td colSpan={6} style={{ padding: "10px 20px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
-              <span style={{ fontSize: "0.72rem", fontWeight: 700, color: "#60a5fa", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+        <tr className="bg-blue-500/5 border-b border-slate-400/[0.07]">
+          <td colSpan={6} className="p-[10px_20px]">
+            <div className="flex items-center gap-5 flex-wrap">
+              <span className="text-[0.72rem] font-bold text-blue-400 tracking-[0.06em] uppercase">
                 Donor Info
               </span>
               {req.donorName && (
-                <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#94a3b8", fontSize: "0.82rem" }}>
-                  <User2 size={13} color="#60a5fa" />
-                  <span style={{ color: "#e2e8f0", fontWeight: 600 }}>{req.donorName}</span>
+                <div className="flex items-center gap-1.5 text-slate-400 text-[0.82rem]">
+                  <User2 size={13} className="text-blue-400" />
+                  <span className="text-slate-200 font-semibold">{req.donorName}</span>
                 </div>
               )}
               {req.donorEmail && (
-                <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#94a3b8", fontSize: "0.82rem" }}>
-                  <Mail size={13} color="#60a5fa" />
+                <div className="flex items-center gap-1.5 text-slate-400 text-[0.82rem]">
+                  <Mail size={13} className="text-blue-400" />
                   <span>{req.donorEmail}</span>
                 </div>
               )}
@@ -400,10 +357,9 @@ export default function DonorDashboardPage() {
 
   if (isPending) {
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#94a3b8", padding: "60px 24px" }}>
-        <div style={{ width: 22, height: 22, border: "2.5px solid rgba(148,163,184,0.2)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <div className="flex items-center gap-3 text-slate-400 py-[60px] px-6">
+        <div className="w-[22px] h-[22px] border-[2.5px] border-slate-400/20 border-t-red-500 rounded-full animate-[spin_0.8s_linear_infinite]" />
         <span>Loading…</span>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -411,11 +367,10 @@ export default function DonorDashboardPage() {
   // ── Render ────────────────────────────────────────────────────────────────────
 
   return (
-    <div style={{ padding: "4px 0 40px", color: "#f1f5f9", minHeight: "100%" }}>
+    <div className="pt-1 pb-10 text-slate-100 min-h-full">
       <style>{`
-        @keyframes spin    { to { transform: rotate(360deg); } }
         @keyframes fadeUp  { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes shimmer { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        @keyframes dropIn  { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
       `}</style>
 
       {/* Delete Modal */}
@@ -429,70 +384,47 @@ export default function DonorDashboardPage() {
       )}
 
       {/* ── Welcome Section ─────────────────────────────────────────────────── */}
-      <div style={{
-        maxWidth: 900, margin: "0 auto 32px",
-        background: "linear-gradient(135deg, rgba(239,68,68,0.12) 0%, rgba(15,23,42,0.6) 60%)",
-        border: "1px solid rgba(239,68,68,0.2)",
-        borderRadius: 20, padding: "32px 32px",
-        backdropFilter: "blur(14px)",
-        animation: "fadeUp 0.4s ease",
-        position: "relative", overflow: "hidden",
-      }}>
+      <div className="max-w-[900px] mx-auto mb-8 bg-[linear-gradient(135deg,rgba(239,68,68,0.12)_0%,rgba(15,23,42,0.6)_60%)] border border-red-500/20 rounded-[20px] p-8 backdrop-blur-[14px] animate-[fadeUp_0.4s_ease] relative overflow-hidden">
         {/* Decorative blob */}
-        <div style={{
-          position: "absolute", top: -40, right: -40,
-          width: 200, height: 200,
-          background: "radial-gradient(circle, rgba(239,68,68,0.15), transparent 70%)",
-          borderRadius: "50%", pointerEvents: "none",
-        }} />
+        <div className="absolute -top-10 -right-10 w-[200px] h-[200px] bg-[radial-gradient(circle,rgba(239,68,68,0.15),transparent_70%)] rounded-full pointer-events-none" />
 
-        <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+        <div className="flex items-center gap-4 flex-wrap">
           {/* Avatar */}
-          <div style={{
-            width: 64, height: 64, borderRadius: "50%",
-            background: user?.image ? "transparent" : `hsl(${(user?.name ?? "D").charCodeAt(0) * 13 % 360}, 55%, 38%)`,
-            display: "flex", alignItems: "center", justifyContent: "center",
-            border: "3px solid rgba(239,68,68,0.4)",
-            boxShadow: "0 0 24px rgba(239,68,68,0.2)",
-            flexShrink: 0, overflow: "hidden",
-          }}>
+          <div className="w-16 h-16 rounded-full flex items-center justify-center border-[3px] border-red-500/40 shadow-[0_0_24px_rgba(239,68,68,0.2)] shrink-0 overflow-hidden"
+               style={{ background: user?.image ? "transparent" : `hsl(${(user?.name ?? "D").charCodeAt(0) * 13 % 360}, 55%, 38%)` }}>
             {user?.image
-              ? <img src={user.image} alt={user.name} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              : <span style={{ color: "#fff", fontSize: "1.5rem", fontWeight: 700 }}>
+              ? <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
+              : <span className="text-white text-2xl font-bold">
                   {(user?.name ?? "D").split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()}
                 </span>}
           </div>
 
-          <div style={{ flex: 1 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
-              <Sparkles size={15} color="#fbbf24" />
-              <span style={{ fontSize: "0.8rem", color: "#fbbf24", fontWeight: 600, letterSpacing: "0.04em" }}>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles size={15} className="text-amber-400" />
+              <span className="text-[0.8rem] text-amber-400 font-semibold tracking-[0.04em]">
                 {greeting}
               </span>
             </div>
-            <h1 style={{ margin: 0, fontSize: "1.75rem", fontWeight: 800, color: "#f1f5f9", letterSpacing: "-0.03em", lineHeight: 1.2 }}>
+            <h1 className="m-0 text-[1.75rem] font-extrabold text-slate-100 tracking-[-0.03em] leading-[1.2]">
               {user?.name ?? "Donor"} 👋
             </h1>
-            <p style={{ margin: "6px 0 0", color: "#94a3b8", fontSize: "0.88rem", lineHeight: 1.5 }}>
+            <p className="m-0 mt-1.5 text-slate-400 text-[0.88rem] leading-relaxed">
               Welcome to your donor dashboard. You can manage your donation requests and track their status here.
             </p>
           </div>
 
           {/* Quick stats */}
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+          <div className="flex gap-3 flex-wrap">
             {[
-              { label: "Total",      count: requests.length,                                       color: "#94a3b8" },
-              { label: "Pending",    count: requests.filter((r) => r.status === "pending").length,    color: "#fbbf24" },
-              { label: "In Progress",count: requests.filter((r) => r.status === "inprogress").length, color: "#60a5fa" },
-              { label: "Done",       count: requests.filter((r) => r.status === "done").length,       color: "#4ade80" },
+              { label: "Total",      count: requests.length,                                       color: "text-slate-400" },
+              { label: "Pending",    count: requests.filter((r) => r.status === "pending").length,    color: "text-amber-400" },
+              { label: "In Progress",count: requests.filter((r) => r.status === "inprogress").length, color: "text-blue-400" },
+              { label: "Done",       count: requests.filter((r) => r.status === "done").length,       color: "text-green-400" },
             ].map(({ label, count, color }) => (
-              <div key={label} style={{
-                textAlign: "center", padding: "10px 16px",
-                background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.1)",
-                borderRadius: 12, minWidth: 68,
-              }}>
-                <div style={{ fontSize: "1.4rem", fontWeight: 800, color, lineHeight: 1 }}>{count}</div>
-                <div style={{ fontSize: "0.68rem", color: "#64748b", fontWeight: 600, marginTop: 4, whiteSpace: "nowrap" }}>{label}</div>
+              <div key={label} className="text-center px-4 py-2.5 bg-slate-900/50 border border-slate-400/10 rounded-xl min-w-[68px]">
+                <div className={`text-[1.4rem] font-extrabold leading-none ${color}`}>{count}</div>
+                <div className="text-[0.68rem] text-slate-500 font-semibold mt-1 whitespace-nowrap">{label}</div>
               </div>
             ))}
           </div>
@@ -501,71 +433,50 @@ export default function DonorDashboardPage() {
 
       {/* ── Recent Requests Section ──────────────────────────────────────────── */}
       {(loading || recent.length > 0) && (
-        <div style={{ maxWidth: 900, margin: "0 auto", animation: "fadeUp 0.5s ease 0.1s both" }}>
+        <div className="max-w-[900px] mx-auto animate-[fadeUp_0.5s_ease_0.1s_both]">
 
           {/* Section header */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, flexWrap: "wrap", gap: 10 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <div style={{
-                width: 36, height: 36, borderRadius: 10,
-                background: "linear-gradient(135deg, rgba(239,68,68,0.25), rgba(220,38,38,0.15))",
-                border: "1px solid rgba(239,68,68,0.3)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-              }}>
-                <Droplets size={17} color="#f87171" />
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2.5">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-[10px] bg-[linear-gradient(135deg,rgba(239,68,68,0.25),rgba(220,38,38,0.15))] border border-red-500/30 flex items-center justify-center">
+                <Droplets size={17} className="text-red-400" />
               </div>
               <div>
-                <h2 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 700, color: "#f1f5f9" }}>
+                <h2 className="m-0 text-[1.1rem] font-bold text-slate-100">
                   Recent Donation Requests
                 </h2>
-                <p style={{ margin: 0, color: "#64748b", fontSize: "0.78rem" }}>
+                <p className="m-0 text-slate-500 text-[0.78rem]">
                   Your 3 most recent requests
                 </p>
               </div>
             </div>
 
-            <Link href="/dashboard/my-donation-requests" style={{
-              display: "inline-flex", alignItems: "center", gap: 6,
-              padding: "8px 18px", borderRadius: 10,
-              background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.35)",
-              color: "#f87171", fontSize: "0.82rem", fontWeight: 700,
-              textDecoration: "none", transition: "background 0.18s",
-            }}
-              onMouseEnter={(e) => e.currentTarget.style.background = "rgba(239,68,68,0.25)"}
-              onMouseLeave={(e) => e.currentTarget.style.background = "rgba(239,68,68,0.15)"}
-            >
+            <Link href="/dashboard/my-donation-requests" 
+                  className="inline-flex items-center gap-1.5 px-[18px] py-2 rounded-[10px] bg-red-500/15 border border-red-500/35 text-red-400 text-[0.82rem] font-bold no-underline transition-colors hover:bg-red-500/25">
               View All Requests <ChevronRight size={14} />
             </Link>
           </div>
 
           {/* Card */}
-          <div style={{
-            background: "rgba(15,23,42,0.7)",
-            border: "1px solid rgba(148,163,184,0.1)",
-            borderRadius: 18, backdropFilter: "blur(12px)",
-            overflow: "hidden",
-          }}>
+          <div className="bg-slate-900/70 border border-slate-400/10 rounded-[18px] backdrop-blur-md overflow-hidden">
             {/* Top accent */}
-            <div style={{ height: 3, background: "linear-gradient(90deg, #ef4444, #dc2626, #b91c1c)" }} />
+            <div className="h-[3px] bg-[linear-gradient(90deg,#ef4444,#dc2626,#b91c1c)]" />
 
             {/* Loading skeleton */}
             {loading ? (
-              <div style={{ padding: "48px 24px", display: "flex", flexDirection: "column", alignItems: "center", gap: 14, color: "#94a3b8" }}>
-                <div style={{ width: 32, height: 32, border: "3px solid rgba(148,163,184,0.15)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
-                <span style={{ fontSize: "0.9rem" }}>Loading requests…</span>
+              <div className="py-12 px-6 flex flex-col items-center gap-3.5 text-slate-400">
+                <div className="w-8 h-8 border-[3px] border-slate-400/15 border-t-red-500 rounded-full animate-[spin_0.8s_linear_infinite]" />
+                <span className="text-[0.9rem]">Loading requests…</span>
               </div>
             ) : (
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 780, fontSize: "0.875rem" }}>
+              <div className="overflow-x-auto">
+                <table className="w-full border-collapse min-w-[780px] text-[0.875rem]">
                   <thead>
-                    <tr style={{ background: "rgba(15,23,42,0.8)", borderBottom: "1px solid rgba(148,163,184,0.12)" }}>
+                    <tr className="bg-slate-900/80 border-b border-slate-400/10">
                       {["Recipient Name", "Location", "Date & Time", "Blood Group", "Status", "Actions"].map((h) => (
-                        <th key={h} style={{
-                          padding: "13px 16px", textAlign: "left",
-                          color: "#64748b", fontWeight: 600,
-                          fontSize: "0.72rem", letterSpacing: "0.06em",
-                          textTransform: "uppercase", whiteSpace: "nowrap",
-                        }}>{h}</th>
+                        <th key={h} className="p-[13px_16px] text-left text-slate-500 font-semibold text-[0.72rem] tracking-[0.06em] uppercase whitespace-nowrap">
+                          {h}
+                        </th>
                       ))}
                     </tr>
                   </thead>
@@ -587,16 +498,9 @@ export default function DonorDashboardPage() {
 
             {/* Footer */}
             {!loading && requests.length > 3 && (
-              <div style={{
-                padding: "14px 20px",
-                borderTop: "1px solid rgba(148,163,184,0.08)",
-                display: "flex", justifyContent: "center",
-              }}>
-                <Link href="/dashboard/my-donation-requests" style={{
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                  color: "#f87171", fontSize: "0.83rem", fontWeight: 600,
-                  textDecoration: "none",
-                }}>
+              <div className="p-[14px_20px] border-t border-slate-400/[0.08] flex justify-center">
+                <Link href="/dashboard/my-donation-requests" 
+                      className="inline-flex items-center gap-1.5 text-red-400 text-[0.83rem] font-semibold no-underline">
                   See all {requests.length} requests <ChevronRight size={14} />
                 </Link>
               </div>
@@ -607,33 +511,19 @@ export default function DonorDashboardPage() {
 
       {/* ── Empty state (no requests yet) ───────────────────────────────────── */}
       {!loading && recent.length === 0 && (
-        <div style={{ maxWidth: 900, margin: "0 auto", animation: "fadeUp 0.5s ease 0.15s both" }}>
-          <div style={{
-            background: "rgba(15,23,42,0.5)", border: "1px solid rgba(148,163,184,0.1)",
-            borderRadius: 18, padding: "52px 32px", textAlign: "center",
-            backdropFilter: "blur(12px)",
-          }}>
-            <div style={{
-              width: 60, height: 60, borderRadius: "50%",
-              background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              margin: "0 auto 18px",
-            }}>
-              <Droplets size={26} color="rgba(239,68,68,0.5)" />
+        <div className="max-w-[900px] mx-auto animate-[fadeUp_0.5s_ease_0.15s_both]">
+          <div className="bg-slate-900/50 border border-slate-400/10 rounded-[18px] p-[52px_32px] text-center backdrop-blur-md">
+            <div className="w-15 h-15 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mx-auto mb-4.5">
+              <Droplets size={26} className="text-red-500/50" />
             </div>
-            <h3 style={{ margin: "0 0 8px", fontSize: "1.1rem", fontWeight: 700, color: "#f1f5f9" }}>
+            <h3 className="m-0 mb-2 text-[1.1rem] font-bold text-slate-100">
               No Donation Requests Yet
             </h3>
-            <p style={{ margin: "0 0 24px", color: "#64748b", fontSize: "0.875rem", lineHeight: 1.6 }}>
+            <p className="m-0 mb-6 text-slate-500 text-[0.875rem] leading-relaxed">
               You haven't made any donation requests. Create your first request to find a blood donor.
             </p>
-            <Link href="/dashboard/create-donation-request" style={{
-              display: "inline-flex", alignItems: "center", gap: 8,
-              padding: "11px 24px", borderRadius: 10,
-              background: "rgba(239,68,68,0.18)", border: "1px solid rgba(239,68,68,0.4)",
-              color: "#f87171", fontSize: "0.9rem", fontWeight: 700,
-              textDecoration: "none",
-            }}>
+            <Link href="/dashboard/create-donation-request" 
+                  className="inline-flex items-center gap-2 px-6 py-[11px] rounded-[10px] bg-red-500/20 border border-red-500/40 text-red-400 text-[0.9rem] font-bold no-underline transition-colors hover:bg-red-500/30">
               <Droplets size={16} /> Create Donation Request
             </Link>
           </div>

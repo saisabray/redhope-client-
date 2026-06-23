@@ -23,7 +23,7 @@ const dashboardItems = {
     { icon: MdOutlineBloodtype,label: "Create Request",       link: "/dashboard/create-donation-request" },
   ],
   admin: [
-    { icon: LayoutDashboard,   label: "Overview ",            link: "/dashboard/admin" },
+    { icon: LayoutDashboard,   label: "Overview",             link: "/dashboard/admin" },
     { icon: User,              label: "Profile",              link: "/dashboard/profile" },
     { icon: User,              label: "All Users",            link: "/dashboard/admin/all-users" },
     { icon: Bell,              label: "Donation Requests",    link: "/dashboard/donation-request" },
@@ -36,53 +36,28 @@ const dashboardItems = {
 };
 
 const roleMeta = {
-  admin:     { label: "Admin",     color: "#ef4444", bg: "rgba(239,68,68,0.12)",   border: "rgba(239,68,68,0.25)" },
-  donor:     { label: "Donor",     color: "#f97316", bg: "rgba(249,115,22,0.12)",  border: "rgba(249,115,22,0.25)" },
-  volunteer: { label: "Volunteer", color: "#3b82f6", bg: "rgba(59,130,246,0.12)",  border: "rgba(59,130,246,0.25)" },
-};
-
-// ─── Design tokens ────────────────────────────────────────────────────────────
-
-const C = {
-  bg:          "#0d0d0f",
-  bgCard:      "rgba(255,255,255,0.04)",
-  bgHover:     "rgba(255,255,255,0.06)",
-  bgActive:    "rgba(239,68,68,0.12)",
-  border:      "rgba(255,255,255,0.08)",
-  accent:      "#ef4444",
-  accentLight: "#f87171",
-  text:        "#f1f5f9",
-  muted:       "#64748b",
-  subtle:      "#334155",
+  admin:     { label: "Admin",     text: "text-red-500", bg: "bg-red-500/10", border: "border-red-500/25" },
+  donor:     { label: "Donor",     text: "text-orange-500", bg: "bg-orange-500/10", border: "border-orange-500/25" },
+  volunteer: { label: "Volunteer", text: "text-blue-500", bg: "bg-blue-500/10", border: "border-blue-500/25" },
 };
 
 // ─── Nav content (shared desktop + mobile) ────────────────────────────────────
 
 function NavContent({ pathname, navItems, meta, user, isPending, onNavigate, compact }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", height: "100%", padding: compact ? "16px 20px 20px" : "28px 20px 20px" }}>
+    <div className={`flex flex-col h-full ${compact ? "px-5 pt-4 pb-5" : "px-5 pt-7 pb-5"}`}>
 
       {/* ── Logo ── */}
-      <Link href="/" style={{ display: "flex", alignItems: "center", marginBottom: 28, textDecoration: "none" }}>
+      <Link href="/" className="flex items-center mb-7 no-underline">
         <Image src="/images/logo-auth.png" alt="RedHope" width={150} height={150} priority />
       </Link>
 
       {/* ── User card ── */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        background: C.bgCard,
-        border: `1px solid ${C.border}`,
-        borderRadius: 14,
-        padding: "14px 16px",
-        marginBottom: 8,
-        minHeight: 72,
-      }}>
+      <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 mb-2 min-h-[72px]">
         {isPending ? (
           <>
             <Skeleton className="w-10 h-10 rounded-full shrink-0" />
-            <div style={{ display: "flex", flexDirection: "column", gap: 6, flex: 1 }}>
+            <div className="flex flex-col gap-1.5 flex-1">
               <Skeleton className="h-3 rounded-md w-28" />
               <Skeleton className="h-2.5 rounded-md w-16" />
             </div>
@@ -91,27 +66,15 @@ function NavContent({ pathname, navItems, meta, user, isPending, onNavigate, com
           <>
             <Avatar size="md" className="shrink-0 ring-2 ring-red-500/40">
               <Avatar.Image src={user.image} alt={user.name} />
-              <Avatar.Fallback style={{ background: "linear-gradient(135deg,#ef4444,#f97316)", color: "#fff", fontWeight: 700, fontSize: 16 }}>
+              <Avatar.Fallback className="bg-[linear-gradient(135deg,#ef4444,#f97316)] text-white font-bold text-base">
                 {user.name?.charAt(0).toUpperCase() ?? "U"}
               </Avatar.Fallback>
             </Avatar>
-            <div style={{ display: "flex", flexDirection: "column", gap: 5, minWidth: 0 }}>
-              <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: C.text, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+            <div className="flex flex-col gap-1 min-w-0">
+              <p className="m-0 text-sm font-semibold text-slate-100 whitespace-nowrap overflow-hidden text-ellipsis">
                 {user.name}
               </p>
-              <span style={{
-                display: "inline-block",
-                fontSize: 10,
-                fontWeight: 700,
-                letterSpacing: "0.6px",
-                textTransform: "uppercase",
-                color: meta.color,
-                background: meta.bg,
-                border: `1px solid ${meta.border}`,
-                borderRadius: 5,
-                padding: "2px 8px",
-                width: "fit-content",
-              }}>
+              <span className={`inline-block text-[10px] font-bold tracking-[0.6px] uppercase ${meta.text} ${meta.bg} border ${meta.border} rounded-[5px] px-2 py-0.5 w-fit`}>
                 {meta.label}
               </span>
             </div>
@@ -120,16 +83,16 @@ function NavContent({ pathname, navItems, meta, user, isPending, onNavigate, com
       </div>
 
       {/* ── Divider ── */}
-      <div style={{ height: 1, background: C.border, margin: "16px 0 12px" }} />
+      <div className="h-px bg-white/10 my-4" />
 
       {/* ── Section label ── */}
-      <p style={{ margin: "0 0 8px 4px", fontSize: 10, fontWeight: 700, letterSpacing: "1px", textTransform: "uppercase", color: C.muted }}>
+      <p className="m-0 mb-2 ml-1 text-[10px] font-bold tracking-[1px] uppercase text-slate-500">
         Navigation
       </p>
 
       {/* ── Nav items ── */}
       <nav aria-label="Dashboard navigation">
-        <ul role="list" style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 3 }}>
+        <ul role="list" className="list-none m-0 p-0 flex flex-col gap-[3px]">
           {navItems.map(({ icon: Icon, label, link }) => {
            
             const overviewLinks = ["/dashboard/admin", "/dashboard/donor", "/dashboard/volunteer"];
@@ -143,28 +106,15 @@ function NavContent({ pathname, navItems, meta, user, isPending, onNavigate, com
                   href={link}
                   aria-current={isActive ? "page" : undefined}
                   onClick={onNavigate}
-                  className="sidebar-nav-link"
-                  data-active={isActive ? "true" : "false"}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 12,
-                    padding: "12px 16px",
-                    borderRadius: 10,
-                    fontSize: 15,
-                    fontWeight: 500,
-                    textDecoration: "none",
-                    transition: "background 0.15s, color 0.15s",
-                    color: isActive ? C.accentLight : C.muted,
-                    background: isActive ? C.bgActive : "transparent",
-                    borderLeft: isActive ? `3px solid ${C.accent}` : "3px solid transparent",
-                  }}
-                  onMouseEnter={e => { if (!isActive) { e.currentTarget.style.background = C.bgHover; e.currentTarget.style.color = C.text; } }}
-                  onMouseLeave={e => { if (!isActive) { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.muted; } }}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-[15px] font-medium no-underline transition-colors duration-150 border-l-[3px] group ${
+                    isActive 
+                      ? "text-red-400 bg-red-500/10 border-red-500" 
+                      : "text-slate-500 bg-transparent border-transparent hover:bg-white/5 hover:text-slate-100"
+                  }`}
                 >
-                  <Icon size={20} style={{ flexShrink: 0 }} aria-hidden="true" />
-                  <span style={{ flex: 1 }}>{label}</span>
-                  {isActive && <ChevronRight size={14} style={{ opacity: 0.6 }} aria-hidden="true" />}
+                  <Icon size={20} className="shrink-0" aria-hidden="true" />
+                  <span className="flex-1">{label}</span>
+                  {isActive && <ChevronRight size={14} className="opacity-60" aria-hidden="true" />}
                 </Link>
               </li>
             );
@@ -173,31 +123,15 @@ function NavContent({ pathname, navItems, meta, user, isPending, onNavigate, com
       </nav>
 
       {/* ── Spacer ── */}
-      <div style={{ flex: 1 }} />
+      <div className="flex-1" />
 
       {/* ── Footer ── */}
       <div>
-        <div style={{ height: 1, background: C.border, margin: "16px 0 10px" }} />
+        <div className="h-px bg-white/10 mt-4 mb-2.5" />
         <button
           onClick={() => authClient.signOut()}
           aria-label="Sign out"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-            width: "100%",
-            padding: "10px 14px",
-            borderRadius: 10,
-            border: "none",
-            background: "transparent",
-            color: C.muted,
-            fontSize: 13.5,
-            fontWeight: 500,
-            cursor: "pointer",
-            transition: "background 0.15s, color 0.15s",
-          }}
-          onMouseEnter={e => { e.currentTarget.style.background = "rgba(239,68,68,0.1)"; e.currentTarget.style.color = C.accentLight; }}
-          onMouseLeave={e => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = C.muted; }}
+          className="flex items-center gap-2.5 w-full px-[14px] py-[10px] rounded-lg border-none bg-transparent text-slate-500 text-[13.5px] font-medium cursor-pointer transition-colors duration-150 hover:bg-red-500/10 hover:text-red-400 group"
         >
           <LogOut size={16} aria-hidden="true" />
           <span>Sign Out</span>
@@ -209,8 +143,6 @@ function NavContent({ pathname, navItems, meta, user, isPending, onNavigate, com
 }
 
 // ─── Main export ──────────────────────────────────────────────────────────────
-
-const SIDEBAR_W = "300px";
 
 export function DashBoardSidebar() {
   const pathname    = usePathname();
@@ -228,8 +160,7 @@ export function DashBoardSidebar() {
     <>
       {/* ── Desktop sidebar ── */}
       <aside
-        className="hidden lg:flex flex-col min-h-screen shrink-0"
-        style={{ width: SIDEBAR_W, background: C.bg, borderRight: `1px solid ${C.border}` }}
+        className="hidden lg:flex flex-col min-h-screen shrink-0 w-[300px] bg-[#0d0d0f] border-r border-white/10"
         aria-label="Dashboard sidebar"
       >
         <NavContent {...sharedProps} onNavigate={undefined} />
@@ -240,15 +171,7 @@ export function DashBoardSidebar() {
         {/* Hamburger */}
         <button
           id="rh-hamburger"
-          className="lg:hidden fixed top-4 left-4 z-50 flex items-center justify-center rounded-xl cursor-pointer"
-          style={{
-            width: 46,
-            height: 46,
-            background: C.bg,
-            border: `1px solid ${C.border}`,
-            color: C.text,
-            boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
-          }}
+          className="lg:hidden fixed top-4 left-4 z-50 flex items-center justify-center rounded-xl cursor-pointer w-[46px] h-[46px] bg-[#0d0d0f] border border-white/10 text-slate-100 shadow-[0_4px_16px_rgba(0,0,0,0.4)]"
           onClick={drawerState.open}
           aria-label="Open navigation"
           aria-expanded={drawerState.isOpen}
@@ -261,7 +184,7 @@ export function DashBoardSidebar() {
         <Drawer.Content placement="left" className="rh-drawer-content">
           <Drawer.Dialog
             aria-label="Dashboard navigation drawer"
-            style={{ background: C.bg, height: "100%", display: "flex", flexDirection: "column" }}
+            className="bg-[#0d0d0f] h-full flex flex-col"
           >
             <Drawer.Body className="rh-drawer-body">
               <NavContent {...sharedProps} onNavigate={drawerState.close} compact />
@@ -275,17 +198,17 @@ export function DashBoardSidebar() {
         .rh-drawer-content,
         .rh-drawer-content > *,
         .rh-drawer-content [role="dialog"] {
-          background: ${C.bg} !important;
-          border-right: 1px solid ${C.border} !important;
+          background: #0d0d0f !important;
+          border-right: 1px solid rgba(255,255,255,0.08) !important;
         }
         .rh-drawer-content {
-          width: ${SIDEBAR_W} !important;
+          width: 300px !important;
           max-width: 90vw !important;
         }
         .rh-drawer-body {
           padding: 0 !important;
           height: 100%;
-          background: ${C.bg};
+          background: #0d0d0f;
         }
       `}</style>
     </>

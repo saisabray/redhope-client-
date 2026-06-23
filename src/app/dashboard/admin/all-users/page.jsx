@@ -2,41 +2,19 @@ import { UserTable } from "@/components/dashboard/Admin/UserTable";
 
 const AllUsersPage = () => {
   return (
-    <div
-      style={{
-        padding: "32px 24px",
-        minHeight: "100vh",
-        background: "linear-gradient(135deg, #0a0f1e 0%, #0d1526 50%, #0a0f1e 100%)",
-      }}
-    >
+    <div className="py-8 px-6 min-h-screen bg-[linear-gradient(135deg,#0a0f1e_0%,#0d1526_50%,#0a0f1e_100%)]">
       {/* Page Header */}
-      <div style={{ marginBottom: 28 }}>
-        <h1
-          style={{
-            fontSize: "1.6rem",
-            fontWeight: 700,
-            color: "#f1f5f9",
-            margin: 0,
-            letterSpacing: "-0.02em",
-          }}
-        >
+      <div className="mb-7">
+        <h1 className="text-[1.6rem] font-bold text-slate-100 m-0 tracking-[-0.02em]">
           User Management
         </h1>
-        <p style={{ color: "#64748b", fontSize: "0.88rem", marginTop: 4 }}>
+        <p className="text-slate-500 text-[0.88rem] mt-1">
           Manage user roles and access control across the platform.
         </p>
       </div>
 
       {/* Table Card */}
-      <div
-        style={{
-          background: "rgba(15,23,42,0.7)",
-          border: "1px solid rgba(148,163,184,0.1)",
-          borderRadius: 18,
-          padding: "20px 20px",
-          backdropFilter: "blur(12px)",
-        }}
-      >
+      <div className="bg-slate-900/70 border border-slate-400/10 rounded-[18px] p-5 backdrop-blur-md">
         <UserTable />
       </div>
     </div>

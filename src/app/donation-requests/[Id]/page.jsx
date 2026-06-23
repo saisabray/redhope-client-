@@ -23,10 +23,10 @@ const BLOOD_COLORS = {
 };
 
 const STATUS_COLORS = {
-  pending:    { bg: "rgba(251,191,36,0.12)",  text: "#fbbf24", border: "rgba(251,191,36,0.35)",  label: "Pending"     },
-  inprogress: { bg: "rgba(59,130,246,0.12)",  text: "#60a5fa", border: "rgba(59,130,246,0.35)",  label: "In Progress" },
-  done:       { bg: "rgba(34,197,94,0.12)",   text: "#4ade80", border: "rgba(34,197,94,0.3)",    label: "Done"        },
-  canceled:   { bg: "rgba(239,68,68,0.12)",   text: "#f87171", border: "rgba(239,68,68,0.3)",    label: "Canceled"    },
+  pending:    { bg: "bg-amber-400/10",  text: "text-amber-400", border: "border-amber-400/35",  label: "Pending"     },
+  inprogress: { bg: "bg-blue-500/10",  text: "text-blue-400", border: "border-blue-500/35",  label: "In Progress" },
+  done:       { bg: "bg-green-500/10",   text: "text-green-400", border: "border-green-500/30",    label: "Done"        },
+  canceled:   { bg: "bg-red-500/10",   text: "text-red-400", border: "border-red-500/30",    label: "Canceled"    },
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -44,24 +44,21 @@ function formatDate(d) {
 
 function DetailRow({ icon: Icon, label, value, accent }) {
   return (
-    <div style={{
-      display: "flex", alignItems: "flex-start", gap: 14,
-      padding: "14px 0",
-      borderBottom: "1px solid rgba(148,163,184,0.07)",
-    }}>
-      <div style={{
-        width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-        background: accent ? `${accent}18` : "rgba(148,163,184,0.08)",
-        border: `1px solid ${accent ? `${accent}33` : "rgba(148,163,184,0.12)"}`,
-        display: "flex", alignItems: "center", justifyContent: "center",
-      }}>
+    <div className="flex items-start gap-3.5 py-3.5 border-b border-slate-400/[0.07] last:border-0">
+      <div 
+        className="w-9 h-9 rounded-[10px] shrink-0 flex items-center justify-center border"
+        style={{
+          background: accent ? `${accent}18` : "rgba(148,163,184,0.08)",
+          borderColor: accent ? `${accent}33` : "rgba(148,163,184,0.12)",
+        }}
+      >
         <Icon size={16} color={accent ?? "#64748b"} />
       </div>
-      <div style={{ flex: 1 }}>
-        <p style={{ margin: 0, fontSize: "0.7rem", color: "#64748b", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 3 }}>
+      <div className="flex-1">
+        <p className="m-0 mb-[3px] text-[0.7rem] text-slate-500 font-bold tracking-[0.06em] uppercase">
           {label}
         </p>
-        <p style={{ margin: 0, color: "#e2e8f0", fontSize: "0.9rem", fontWeight: 500, lineHeight: 1.5, whiteSpace: "pre-wrap" }}>
+        <p className="m-0 text-slate-200 text-[0.9rem] font-medium leading-relaxed whitespace-pre-wrap">
           {value ?? "—"}
         </p>
       </div>
@@ -73,42 +70,21 @@ function DetailRow({ icon: Icon, label, value, accent }) {
 
 function DonateModal({ user, onConfirm, onCancel, loading, success }) {
   const modal = (
-    <div style={{
-      position: "fixed", inset: 0, zIndex: 99999,
-      background: "rgba(0,0,0,0.7)", backdropFilter: "blur(6px)",
-      display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
-    }}>
-      <div style={{
-        background: "linear-gradient(145deg, #0f172a, #111827)",
-        border: "1px solid rgba(148,163,184,0.12)",
-        borderRadius: 22, padding: "36px 32px",
-        maxWidth: 460, width: "100%",
-        boxShadow: "0 32px 80px rgba(0,0,0,0.7)",
-        animation: "fadeUp 0.2s ease",
-      }}>
+    <div className="fixed inset-0 z-[99999] bg-black/70 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="bg-[linear-gradient(145deg,#0f172a,#111827)] border border-slate-400/10 rounded-[22px] p-[36px_32px] w-full max-w-[460px] shadow-[0_32px_80px_rgba(0,0,0,0.7)] animate-[fadeUp_0.2s_ease]">
         {success ? (
           /* ── Success state ── */
-          <div style={{ textAlign: "center" }}>
-            <div style={{
-              width: 64, height: 64, borderRadius: "50%",
-              background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.35)",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              margin: "0 auto 18px",
-              boxShadow: "0 0 30px rgba(34,197,94,0.2)",
-            }}>
-              <CheckCircle2 size={30} color="#4ade80" />
+          <div className="text-center">
+            <div className="w-16 h-16 rounded-full bg-green-500/15 border border-green-500/35 flex items-center justify-center mx-auto mb-4.5 shadow-[0_0_30px_rgba(34,197,94,0.2)]">
+              <CheckCircle2 size={30} className="text-green-400" />
             </div>
-            <h3 style={{ margin: "0 0 10px", fontSize: "1.2rem", fontWeight: 800, color: "#4ade80" }}>
+            <h3 className="m-0 mb-2.5 text-[1.2rem] font-extrabold text-green-400">
               Thank You! 🩸
             </h3>
-            <p style={{ margin: "0 0 24px", color: "#94a3b8", fontSize: "0.9rem", lineHeight: 1.6 }}>
+            <p className="m-0 mb-6 text-slate-400 text-[0.9rem] leading-relaxed">
               Your donation has been confirmed. The requester will be notified shortly.
             </p>
-            <button onClick={onCancel} style={{
-              padding: "10px 28px", borderRadius: 10,
-              background: "rgba(34,197,94,0.15)", border: "1px solid rgba(34,197,94,0.35)",
-              color: "#4ade80", fontSize: "0.875rem", fontWeight: 700, cursor: "pointer",
-            }}>
+            <button onClick={onCancel} className="px-7 py-2.5 rounded-[10px] bg-green-500/15 border border-green-500/35 text-green-400 text-[0.875rem] font-bold cursor-pointer transition-colors hover:bg-green-500/25">
               Close
             </button>
           </div>
@@ -116,88 +92,60 @@ function DonateModal({ user, onConfirm, onCancel, loading, success }) {
           /* ── Form ── */
           <>
             {/* Header */}
-            <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 26 }}>
-              <div style={{
-                width: 48, height: 48, borderRadius: "50%",
-                background: "rgba(239,68,68,0.15)", border: "1px solid rgba(239,68,68,0.35)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                boxShadow: "0 0 24px rgba(239,68,68,0.15)",
-              }}>
-                <Heart size={22} color="#f87171" fill="rgba(239,68,68,0.3)" />
+            <div className="flex items-center gap-3.5 mb-6.5">
+              <div className="w-12 h-12 rounded-full bg-red-500/15 border border-red-500/35 flex items-center justify-center shadow-[0_0_24px_rgba(239,68,68,0.15)]">
+                <Heart size={22} className="text-red-400" fill="rgba(239,68,68,0.3)" />
               </div>
               <div>
-                <h3 style={{ margin: 0, fontSize: "1.15rem", fontWeight: 800, color: "#f1f5f9" }}>
+                <h3 className="m-0 text-[1.15rem] font-extrabold text-slate-100">
                   Confirm Your Donation
                 </h3>
-                <p style={{ margin: 0, color: "#64748b", fontSize: "0.8rem", marginTop: 2 }}>
+                <p className="m-0 mt-0.5 text-slate-500 text-[0.8rem]">
                   Your info will be shared with the requester.
                 </p>
               </div>
             </div>
 
             {/* Donor name (read-only) */}
-            <div style={{ marginBottom: 14 }}>
-              <label style={{ display: "block", fontSize: "0.75rem", color: "#64748b", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 7 }}>
+            <div className="mb-3.5">
+              <label className="block text-[0.75rem] text-slate-500 font-bold tracking-[0.06em] uppercase mb-[7px]">
                 Your Name
               </label>
-              <div style={{
-                display: "flex", alignItems: "center", gap: 10,
-                padding: "11px 14px", borderRadius: 10,
-                background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.12)",
-              }}>
-                <User size={15} color="#64748b" />
-                <span style={{ color: "#e2e8f0", fontSize: "0.9rem", fontWeight: 500 }}>{user?.name ?? "—"}</span>
-                <span style={{ marginLeft: "auto", fontSize: "0.68rem", color: "#64748b", background: "rgba(148,163,184,0.08)", borderRadius: 6, padding: "2px 8px" }}>read-only</span>
+              <div className="flex items-center gap-2.5 p-[11px_14px] rounded-[10px] bg-slate-900/60 border border-slate-400/10">
+                <User size={15} className="text-slate-500" />
+                <span className="text-slate-200 text-[0.9rem] font-medium">{user?.name ?? "—"}</span>
+                <span className="ml-auto text-[0.68rem] text-slate-500 bg-slate-400/10 rounded-md px-2 py-0.5">read-only</span>
               </div>
             </div>
 
             {/* Donor email (read-only) */}
-            <div style={{ marginBottom: 28 }}>
-              <label style={{ display: "block", fontSize: "0.75rem", color: "#64748b", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 7 }}>
+            <div className="mb-7">
+              <label className="block text-[0.75rem] text-slate-500 font-bold tracking-[0.06em] uppercase mb-[7px]">
                 Your Email
               </label>
-              <div style={{
-                display: "flex", alignItems: "center", gap: 10,
-                padding: "11px 14px", borderRadius: 10,
-                background: "rgba(15,23,42,0.6)", border: "1px solid rgba(148,163,184,0.12)",
-              }}>
-                <Mail size={15} color="#64748b" />
-                <span style={{ color: "#e2e8f0", fontSize: "0.9rem", fontWeight: 500 }}>{user?.email ?? "—"}</span>
-                <span style={{ marginLeft: "auto", fontSize: "0.68rem", color: "#64748b", background: "rgba(148,163,184,0.08)", borderRadius: 6, padding: "2px 8px" }}>read-only</span>
+              <div className="flex items-center gap-2.5 p-[11px_14px] rounded-[10px] bg-slate-900/60 border border-slate-400/10">
+                <Mail size={15} className="text-slate-500" />
+                <span className="text-slate-200 text-[0.9rem] font-medium">{user?.email ?? "—"}</span>
+                <span className="ml-auto text-[0.68rem] text-slate-500 bg-slate-400/10 rounded-md px-2 py-0.5">read-only</span>
               </div>
             </div>
 
             {/* Notice */}
-            <div style={{
-              display: "flex", gap: 10, padding: "12px 14px",
-              background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.2)",
-              borderRadius: 10, marginBottom: 22,
-            }}>
-              <AlertTriangle size={15} color="#fbbf24" style={{ flexShrink: 0, marginTop: 1 }} />
-              <p style={{ margin: 0, color: "#94a3b8", fontSize: "0.8rem", lineHeight: 1.5 }}>
-                By confirming, the request status will change to <strong style={{ color: "#60a5fa" }}>In Progress</strong>. You are committing to donate blood to the recipient.
+            <div className="flex gap-2.5 p-[12px_14px] bg-amber-400/10 border border-amber-400/20 rounded-[10px] mb-5.5">
+              <AlertTriangle size={15} className="text-amber-400 shrink-0 mt-[2px]" />
+              <p className="m-0 text-slate-400 text-[0.8rem] leading-relaxed">
+                By confirming, the request status will change to <strong className="text-blue-400">In Progress</strong>. You are committing to donate blood to the recipient.
               </p>
             </div>
 
             {/* Buttons */}
-            <div style={{ display: "flex", gap: 10 }}>
-              <button onClick={onCancel} disabled={loading} style={{
-                flex: 1, padding: "11px 0", borderRadius: 10,
-                border: "1px solid rgba(148,163,184,0.18)", background: "rgba(255,255,255,0.04)",
-                color: "#94a3b8", fontSize: "0.875rem", fontWeight: 600, cursor: "pointer",
-              }}>
+            <div className="flex gap-2.5">
+              <button onClick={onCancel} disabled={loading} className="flex-1 py-[11px] rounded-[10px] border border-slate-400/20 bg-white/5 text-slate-400 text-[0.875rem] font-semibold cursor-pointer transition-colors hover:bg-white/10 hover:text-slate-300">
                 Cancel
               </button>
-              <button onClick={onConfirm} disabled={loading} style={{
-                flex: 2, padding: "11px 0", borderRadius: 10,
-                border: "1px solid rgba(239,68,68,0.45)", background: "rgba(239,68,68,0.18)",
-                color: "#f87171", fontSize: "0.875rem", fontWeight: 700,
-                cursor: loading ? "not-allowed" : "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                opacity: loading ? 0.7 : 1, transition: "all 0.18s",
-              }}>
+              <button onClick={onConfirm} disabled={loading} className={`flex-[2] flex items-center justify-center gap-2 py-[11px] rounded-[10px] border border-red-500/45 bg-red-500/20 text-red-400 text-[0.875rem] font-bold transition-all ${loading ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer hover:bg-red-500/30'}`}>
                 {loading ? (
-                  <><div style={{ width: 14, height: 14, border: "2px solid rgba(248,113,113,0.3)", borderTopColor: "#f87171", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Confirming…</>
+                  <><div className="w-3.5 h-3.5 border-2 border-red-400/30 border-t-red-400 rounded-full animate-[spin_0.7s_linear_infinite]" /> Confirming…</>
                 ) : (
                   <><Heart size={15} fill="rgba(239,68,68,0.4)" /> Confirm Donation</>
                 )}
@@ -277,10 +225,9 @@ export default function DonationRequestDetailsPage() {
   // ── Loading/auth spinner ───────────────────────────────────────────────────
   if (sessionLoading || (!user && !sessionLoading)) {
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#94a3b8", padding: "80px 24px", justifyContent: "center", minHeight: "60vh", background: "#0a0f1e" }}>
-        <div style={{ width: 24, height: 24, border: "2.5px solid rgba(148,163,184,0.2)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <div className="flex items-center justify-center gap-3 text-slate-400 py-20 min-h-[60vh] bg-[#0a0f1e]">
+        <div className="w-6 h-6 border-[2.5px] border-slate-400/20 border-t-red-500 rounded-full animate-[spin_0.8s_linear_infinite]" />
         <span>Verifying access…</span>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -289,14 +236,8 @@ export default function DonationRequestDetailsPage() {
   const statusInfo = STATUS_COLORS[request?.status] ?? STATUS_COLORS.pending;
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: "linear-gradient(135deg, #0a0f1e 0%, #0d1526 50%, #0a0f1e 100%)",
-      padding: "40px 20px 60px",
-      fontFamily: "'Inter', 'Outfit', sans-serif",
-    }}>
+    <div className="min-h-screen bg-[linear-gradient(135deg,#0a0f1e_0%,#0d1526_50%,#0a0f1e_100%)] pt-10 px-5 pb-[60px] font-sans">
       <style>{`
-        @keyframes spin   { to { transform: rotate(360deg); } }
         @keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
       `}</style>
 
@@ -311,99 +252,78 @@ export default function DonationRequestDetailsPage() {
         />
       )}
 
-      <div style={{ maxWidth: 760, margin: "0 auto" }}>
+      <div className="max-w-[760px] mx-auto">
 
         {/* Back button */}
         <button
           onClick={() => router.back()}
-          style={{
-            display: "inline-flex", alignItems: "center", gap: 7,
-            marginBottom: 24, padding: "8px 16px", borderRadius: 10,
-            border: "1px solid rgba(148,163,184,0.15)", background: "rgba(255,255,255,0.04)",
-            color: "#94a3b8", fontSize: "0.83rem", fontWeight: 600,
-            cursor: "pointer", transition: "all 0.15s",
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "#e2e8f0"; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.color = "#94a3b8"; }}
+          className="inline-flex items-center gap-1.5 mb-6 px-4 py-2 rounded-[10px] border border-slate-400/15 bg-white/5 text-slate-400 text-[0.83rem] font-semibold cursor-pointer transition-colors duration-150 hover:bg-white/10 hover:text-slate-200"
         >
           <ArrowLeft size={15} /> Back
         </button>
 
         {/* ── Loading ── */}
         {loading && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, padding: "80px 0", color: "#94a3b8" }}>
-            <div style={{ width: 36, height: 36, border: "3px solid rgba(148,163,184,0.15)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+          <div className="flex flex-col items-center gap-3.5 py-20 text-slate-400">
+            <div className="w-9 h-9 border-[3px] border-slate-400/15 border-t-red-500 rounded-full animate-[spin_0.8s_linear_infinite]" />
             <span>Loading details…</span>
           </div>
         )}
 
         {/* ── Error ── */}
         {!loading && error && (
-          <div style={{
-            background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.25)",
-            borderRadius: 16, padding: "40px 32px", textAlign: "center",
-          }}>
-            <AlertTriangle size={32} color="#f87171" style={{ marginBottom: 14 }} />
-            <h3 style={{ margin: "0 0 8px", color: "#f87171", fontWeight: 700 }}>Not Found</h3>
-            <p style={{ margin: 0, color: "#94a3b8", fontSize: "0.9rem" }}>{error}</p>
+          <div className="bg-red-500/10 border border-red-500/25 rounded-2xl p-[40px_32px] text-center">
+            <AlertTriangle size={32} className="text-red-400 mx-auto mb-3.5" />
+            <h3 className="m-0 mb-2 text-red-400 font-bold">Not Found</h3>
+            <p className="m-0 text-slate-400 text-[0.9rem]">{error}</p>
           </div>
         )}
 
         {/* ── Details ── */}
         {!loading && !error && request && (
-          <div style={{ animation: "fadeUp 0.4s ease" }}>
+          <div className="animate-[fadeUp_0.4s_ease]">
 
             {/* ── Header Card ── */}
-            <div style={{
-              background: "rgba(15,23,42,0.8)",
-              border: `1px solid ${bloodColor}33`,
-              borderRadius: 20, overflow: "hidden",
-              backdropFilter: "blur(14px)",
-              marginBottom: 20,
-              boxShadow: `0 0 40px ${bloodColor}15`,
-            }}>
+            <div 
+              className="bg-slate-900/80 rounded-[20px] overflow-hidden backdrop-blur-md mb-5"
+              style={{
+                border: `1px solid ${bloodColor}33`,
+                boxShadow: `0 0 40px ${bloodColor}15`,
+              }}
+            >
               {/* Top accent */}
-              <div style={{ height: 4, background: `linear-gradient(90deg, ${bloodColor}, ${bloodColor}66)` }} />
+              <div className="h-1" style={{ background: `linear-gradient(90deg, ${bloodColor}, ${bloodColor}66)` }} />
 
-              <div style={{ padding: "28px 28px 24px" }}>
-                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 14, marginBottom: 10 }}>
+              <div className="p-[28px_28px_24px]">
+                <div className="flex items-start justify-between flex-wrap gap-3.5 mb-2.5">
                   {/* Blood group */}
-                  <span style={{
-                    background: `${bloodColor}1a`, color: bloodColor,
-                    border: `1px solid ${bloodColor}55`,
-                    borderRadius: 12, padding: "8px 20px",
-                    fontSize: "1.4rem", fontWeight: 900, letterSpacing: "0.04em",
-                  }}>
+                  <span 
+                    className="rounded-xl px-5 py-2 text-[1.4rem] font-black tracking-[0.04em]"
+                    style={{
+                      background: `${bloodColor}1a`, color: bloodColor,
+                      border: `1px solid ${bloodColor}55`,
+                    }}
+                  >
                     {request.bloodGroup ?? "—"}
                   </span>
 
                   {/* Status badge */}
-                  <span style={{
-                    background: statusInfo.bg, color: statusInfo.text, border: `1px solid ${statusInfo.border}`,
-                    borderRadius: 9999, padding: "6px 16px",
-                    fontSize: "0.8rem", fontWeight: 700, letterSpacing: "0.04em",
-                  }}>
+                  <span className={`rounded-full px-4 py-1.5 text-[0.8rem] font-bold tracking-[0.04em] border ${statusInfo.bg} ${statusInfo.text} ${statusInfo.border}`}>
                     {statusInfo.label}
                   </span>
                 </div>
 
-                <h1 style={{ margin: "14px 0 4px", fontSize: "1.6rem", fontWeight: 800, color: "#f1f5f9", letterSpacing: "-0.02em" }}>
+                <h1 className="m-0 mt-3.5 mb-1 text-[1.6rem] font-extrabold text-slate-100 tracking-[-0.02em]">
                   {request.recipientName}
                 </h1>
-                <p style={{ margin: 0, color: "#64748b", fontSize: "0.875rem" }}>
+                <p className="m-0 text-slate-500 text-[0.875rem]">
                   Blood donation request · Created {new Date(request.createdAt).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}
                 </p>
               </div>
             </div>
 
             {/* ── Details Card ── */}
-            <div style={{
-              background: "rgba(15,23,42,0.75)",
-              border: "1px solid rgba(148,163,184,0.1)",
-              borderRadius: 20, padding: "8px 24px 4px",
-              backdropFilter: "blur(12px)",
-              marginBottom: 16,
-            }}>
+            <div className="bg-slate-900/75 border border-slate-400/10 rounded-[20px] p-[8px_24px_4px] backdrop-blur-md mb-4">
               <DetailRow icon={MapPin}       label="District"       value={request.recipientDistrict}  accent="#60a5fa" />
               <DetailRow icon={MapPinned}    label="Upazila"        value={request.recipientUpazila}   accent="#60a5fa" />
               <DetailRow icon={Building2}    label="Hospital"       value={request.hospitalName}        accent="#a78bfa" />
@@ -413,40 +333,22 @@ export default function DonationRequestDetailsPage() {
             </div>
 
             {/* ── Requester Card ── */}
-            <div style={{
-              background: "rgba(15,23,42,0.75)",
-              border: "1px solid rgba(148,163,184,0.1)",
-              borderRadius: 20, padding: "8px 24px 4px",
-              backdropFilter: "blur(12px)",
-              marginBottom: 16,
-            }}>
+            <div className="bg-slate-900/75 border border-slate-400/10 rounded-[20px] p-[8px_24px_4px] backdrop-blur-md mb-4">
               <DetailRow icon={User}  label="Requested By"    value={request.requesterName}  accent="#4ade80" />
               <DetailRow icon={Mail}  label="Requester Email" value={request.requesterEmail} accent="#4ade80" />
             </div>
 
             {/* ── Message Card ── */}
             {request.requestMessage && (
-              <div style={{
-                background: "rgba(15,23,42,0.75)",
-                border: "1px solid rgba(148,163,184,0.1)",
-                borderRadius: 20, padding: "8px 24px 4px",
-                backdropFilter: "blur(12px)",
-                marginBottom: 20,
-              }}>
+              <div className="bg-slate-900/75 border border-slate-400/10 rounded-[20px] p-[8px_24px_4px] backdrop-blur-md mb-5">
                 <DetailRow icon={MessageSquare} label="Request Message" value={request.requestMessage} accent="#f87171" />
               </div>
             )}
 
             {/* ── Donor Info (when inprogress) ── */}
             {request.status === "inprogress" && request.donorName && (
-              <div style={{
-                background: "rgba(59,130,246,0.07)",
-                border: "1px solid rgba(59,130,246,0.25)",
-                borderRadius: 20, padding: "8px 24px 4px",
-                backdropFilter: "blur(12px)",
-                marginBottom: 20,
-              }}>
-                <p style={{ margin: "14px 0 4px", fontSize: "0.72rem", color: "#60a5fa", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              <div className="bg-blue-500/10 border border-blue-500/25 rounded-[20px] p-[8px_24px_4px] backdrop-blur-md mb-5">
+                <p className="m-0 mt-3.5 mb-1 text-[0.72rem] text-blue-400 font-bold tracking-[0.08em] uppercase">
                   Donor Information
                 </p>
                 <DetailRow icon={User} label="Donor Name"  value={request.donorName}  accent="#60a5fa" />
@@ -458,26 +360,7 @@ export default function DonationRequestDetailsPage() {
             {request.status === "pending" && (
               <button
                 onClick={() => setShowModal(true)}
-                style={{
-                  width: "100%", padding: "16px 0", borderRadius: 14,
-                  background: "linear-gradient(135deg, rgba(239,68,68,0.25), rgba(220,38,38,0.18))",
-                  border: "1px solid rgba(239,68,68,0.45)",
-                  color: "#f87171", fontSize: "1rem", fontWeight: 800,
-                  cursor: "pointer", letterSpacing: "0.02em",
-                  display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-                  transition: "all 0.2s ease",
-                  boxShadow: "0 0 30px rgba(239,68,68,0.1)",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "linear-gradient(135deg, rgba(239,68,68,0.35), rgba(220,38,38,0.28))";
-                  e.currentTarget.style.boxShadow = "0 0 40px rgba(239,68,68,0.2)";
-                  e.currentTarget.style.transform = "translateY(-2px)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "linear-gradient(135deg, rgba(239,68,68,0.25), rgba(220,38,38,0.18))";
-                  e.currentTarget.style.boxShadow = "0 0 30px rgba(239,68,68,0.1)";
-                  e.currentTarget.style.transform = "translateY(0)";
-                }}
+                className="w-full py-4 rounded-[14px] bg-[linear-gradient(135deg,rgba(239,68,68,0.25),rgba(220,38,38,0.18))] border border-red-500/45 text-red-400 text-base font-extrabold cursor-pointer tracking-[0.02em] flex items-center justify-center gap-2.5 transition-all duration-200 shadow-[0_0_30px_rgba(239,68,68,0.1)] hover:bg-[linear-gradient(135deg,rgba(239,68,68,0.35),rgba(220,38,38,0.28))] hover:shadow-[0_0_40px_rgba(239,68,68,0.2)] hover:-translate-y-0.5"
               >
                 <Heart size={20} fill="rgba(239,68,68,0.35)" />
                 I Want to Donate Blood
@@ -486,11 +369,7 @@ export default function DonationRequestDetailsPage() {
 
             {/* Status messages for non-pending */}
             {request.status !== "pending" && (
-              <div style={{
-                padding: "16px 20px", borderRadius: 14, textAlign: "center",
-                background: `${statusInfo.bg}`, border: `1px solid ${statusInfo.border}`,
-                color: statusInfo.text, fontSize: "0.9rem", fontWeight: 600,
-              }}>
+              <div className={`p-[16px_20px] rounded-[14px] text-center border ${statusInfo.bg} ${statusInfo.border} ${statusInfo.text} text-[0.9rem] font-semibold`}>
                 This request is currently <strong>{statusInfo.label}</strong> — no longer accepting donors.
               </div>
             )}

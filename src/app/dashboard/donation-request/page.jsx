@@ -20,10 +20,10 @@ const ROWS_PER_PAGE = 8;
 const STATUS_FILTERS = ["all", "pending", "inprogress", "done", "canceled"];
 
 const STATUS_COLORS = {
-  pending:    { bg: "rgba(251,191,36,0.12)",  text: "#fbbf24", border: "rgba(251,191,36,0.35)",  label: "Pending"     },
-  inprogress: { bg: "rgba(59,130,246,0.12)",  text: "#60a5fa", border: "rgba(59,130,246,0.35)",  label: "In Progress" },
-  done:       { bg: "rgba(34,197,94,0.12)",   text: "#4ade80", border: "rgba(34,197,94,0.3)",    label: "Done"        },
-  canceled:   { bg: "rgba(239,68,68,0.12)",   text: "#f87171", border: "rgba(239,68,68,0.3)",    label: "Canceled"    },
+  pending:    { bg: "bg-amber-400/10",  text: "text-amber-400", border: "border-amber-400/35",  label: "Pending"     },
+  inprogress: { bg: "bg-blue-500/10",  text: "text-blue-400", border: "border-blue-500/35",  label: "In Progress" },
+  done:       { bg: "bg-green-500/10",   text: "text-green-400", border: "border-green-500/30",    label: "Done"        },
+  canceled:   { bg: "bg-red-500/10",   text: "text-red-400", border: "border-red-500/30",    label: "Canceled"    },
 };
 
 const BLOOD_COLORS = {
@@ -54,12 +54,7 @@ function formatDate(d) {
 function StatusBadge({ status }) {
   const c = STATUS_COLORS[status] ?? STATUS_COLORS.pending;
   return (
-    <span style={{
-      background: c.bg, color: c.text, border: `1px solid ${c.border}`,
-      borderRadius: 9999, padding: "3px 11px",
-      fontSize: "0.72rem", fontWeight: 700, letterSpacing: "0.04em",
-      whiteSpace: "nowrap",
-    }}>
+    <span className={`px-[11px] py-[3px] rounded-full text-[0.72rem] font-bold tracking-[0.04em] whitespace-nowrap border ${c.bg} ${c.text} ${c.border}`}>
       {c.label}
     </span>
   );
@@ -68,11 +63,12 @@ function StatusBadge({ status }) {
 function BloodBadge({ group }) {
   const color = BLOOD_COLORS[group] ?? "#f87171";
   return (
-    <span style={{
-      background: `${color}18`, color, border: `1px solid ${color}55`,
-      borderRadius: 8, padding: "3px 10px",
-      fontSize: "0.78rem", fontWeight: 800, letterSpacing: "0.04em",
-    }}>
+    <span 
+      className="px-2.5 py-[3px] rounded-lg text-[0.78rem] font-extrabold tracking-[0.04em]"
+      style={{
+        background: `${color}18`, color, border: `1px solid ${color}55`,
+      }}
+    >
       {group}
     </span>
   );
@@ -134,65 +130,42 @@ function ActionDropdown({ request, role, onDelete, onEdit, onStatusChange, isBus
   // Build action list based on role
   const actions = [
     // Admin-only actions
-    role === "admin" && { key: "view",   label: "View Details", icon: Eye,          color: "#94a3b8", onClick: () => router.push(`/donation-requests/${id}`) },
-    canEdit          && { key: "edit",   label: "Edit",         icon: Pencil,        color: "#60a5fa", onClick: () => onEdit(id) },
-    canDelete        && { key: "delete", label: "Delete",       icon: Trash2,        color: "#f87171", onClick: () => onDelete(request) },
+    role === "admin" && { key: "view",   label: "View Details", icon: Eye,          color: "text-slate-400", onClick: () => router.push(`/donation-requests/${id}`) },
+    canEdit          && { key: "edit",   label: "Edit",         icon: Pencil,        color: "text-blue-400", onClick: () => onEdit(id) },
+    canDelete        && { key: "delete", label: "Delete",       icon: Trash2,        color: "text-red-400", onClick: () => onDelete(request) },
     // Both admin & volunteer
-    isInProgress && { key: "done",   label: "Mark as Done", icon: CheckCircle2, color: "#4ade80", onClick: () => { onStatusChange(id, "done");     setOpen(false); } },
-    isInProgress && { key: "cancel", label: "Cancel",       icon: XCircle,      color: "#f87171", onClick: () => { onStatusChange(id, "canceled"); setOpen(false); } },
+    isInProgress && { key: "done",   label: "Mark as Done", icon: CheckCircle2, color: "text-green-400", onClick: () => { onStatusChange(id, "done");     setOpen(false); } },
+    isInProgress && { key: "cancel", label: "Cancel",       icon: XCircle,      color: "text-red-400", onClick: () => { onStatusChange(id, "canceled"); setOpen(false); } },
   ].filter(Boolean);
 
   if (actions.length === 0) {
-    return <span style={{ color: "#475569", fontSize: "0.78rem" }}>—</span>;
+    return <span className="text-slate-600 text-[0.78rem]">—</span>;
   }
 
   const menu = (
-    <div ref={menuRef} style={{
-      position: "fixed", top: menuPos.top, left: menuPos.left, width: menuPos.width,
-      zIndex: 99999, background: "#111827",
-      border: "1px solid rgba(148,163,184,0.12)", borderRadius: 12,
-      boxShadow: "0 8px 32px rgba(0,0,0,0.7)", overflow: "hidden",
-      animation: "dropIn 0.14s ease",
+    <div ref={menuRef} className="fixed z-[99999] bg-gray-900 border border-slate-400/10 rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.7)] overflow-hidden animate-[dropIn_0.14s_ease]" style={{
+      top: menuPos.top, left: menuPos.left, width: menuPos.width,
     }}>
       {actions.map(({ key, label, icon: Icon, color, onClick }) => (
         <button key={key}
           onClick={() => { onClick(); setOpen(false); }}
           disabled={isBusy && (key === "done" || key === "cancel")}
-          style={{
-            display: "flex", alignItems: "center", gap: 10,
-            width: "100%", padding: "10px 16px",
-            border: "none", background: "transparent",
-            color: "#cbd5e1", fontSize: "0.83rem", fontWeight: 500,
-            cursor: (isBusy && (key === "done" || key === "cancel")) ? "not-allowed" : "pointer",
-            textAlign: "left", transition: "background 0.12s",
-            opacity: (isBusy && (key === "done" || key === "cancel")) ? 0.5 : 1,
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.color = color; }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.color = "#cbd5e1"; }}
+          className={`w-full flex items-center gap-2.5 px-4 py-2.5 bg-transparent border-none text-slate-300 text-[0.83rem] font-medium text-left transition-colors group hover:bg-white/5 ${(isBusy && (key === "done" || key === "cancel")) ? 'cursor-not-allowed opacity-50' : 'cursor-pointer opacity-100'}`}
         >
-          <Icon size={14} style={{ color, flexShrink: 0 }} />
-          {label}
+          <Icon size={14} className={`shrink-0 ${color} group-hover:${color}`} />
+          <span className={`group-hover:${color}`}>{label}</span>
         </button>
       ))}
     </div>
   );
 
   return (
-    <div style={{ display: "inline-block" }}>
+    <div className="inline-block">
       <button ref={btnRef} onClick={handleToggle} disabled={isBusy}
-        style={{
-          display: "flex", alignItems: "center", justifyContent: "center",
-          width: 34, height: 34, borderRadius: 8,
-          border: "1px solid rgba(148,163,184,0.15)",
-          background: open ? "rgba(255,255,255,0.07)" : "transparent",
-          color: isBusy ? "rgba(148,163,184,0.35)" : "#94a3b8",
-          cursor: isBusy ? "not-allowed" : "pointer", transition: "background 0.15s",
-        }}
-        onMouseEnter={(e) => { if (!isBusy) e.currentTarget.style.background = "rgba(255,255,255,0.07)"; }}
-        onMouseLeave={(e) => { if (!open) e.currentTarget.style.background = "transparent"; }}
+        className={`flex items-center justify-center w-[34px] h-[34px] rounded-lg border border-slate-400/15 transition-all duration-150 ${open ? 'bg-white/5' : 'bg-transparent hover:bg-white/5'} ${isBusy ? 'text-slate-400/35 cursor-not-allowed' : 'text-slate-400 cursor-pointer'}`}
       >
         {isBusy
-          ? <div style={{ width: 14, height: 14, border: "2px solid rgba(148,163,184,0.2)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+          ? <div className="w-3.5 h-3.5 border-2 border-slate-400/20 border-t-red-500 rounded-full animate-[spin_0.7s_linear_infinite]" />
           : <MoreVertical size={16} />}
       </button>
       {open && mounted && createPortal(menu, document.body)}
@@ -205,38 +178,26 @@ function ActionDropdown({ request, role, onDelete, onEdit, onStatusChange, isBus
 function DeleteModal({ request, onConfirm, onCancel, loading }) {
   if (!request) return null;
   return createPortal(
-    <div style={{
-      position: "fixed", inset: 0, zIndex: 99998,
-      background: "rgba(0,0,0,0.65)", backdropFilter: "blur(4px)",
-      display: "flex", alignItems: "center", justifyContent: "center", padding: 16,
-    }}>
-      <div style={{
-        background: "#111827", border: "1px solid rgba(148,163,184,0.12)",
-        borderRadius: 18, padding: "32px 28px", maxWidth: 420, width: "100%",
-        boxShadow: "0 24px 64px rgba(0,0,0,0.6)", animation: "dropIn 0.2s ease",
-      }}>
-        <div style={{
-          width: 52, height: 52, borderRadius: "50%",
-          background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.3)",
-          display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 18px",
-        }}>
-          <Trash2 size={22} color="#f87171" />
+    <div className="fixed inset-0 z-[99998] bg-black/65 backdrop-blur-sm flex items-center justify-center p-4">
+      <div className="bg-gray-900 border border-slate-400/10 rounded-[18px] p-[32px_28px] w-full max-w-[420px] shadow-[0_24px_64px_rgba(0,0,0,0.6)] animate-[dropIn_0.2s_ease]">
+        <div className="w-[52px] h-[52px] rounded-full bg-red-500/10 border border-red-500/30 flex items-center justify-center mx-auto mb-4.5">
+          <Trash2 size={22} className="text-red-400" />
         </div>
-        <h3 style={{ margin: "0 0 8px", fontSize: "1.1rem", fontWeight: 700, color: "#f1f5f9", textAlign: "center" }}>
+        <h3 className="m-0 mb-2 text-[1.1rem] font-bold text-slate-100 text-center">
           Delete Request?
         </h3>
-        <p style={{ margin: "0 0 24px", color: "#94a3b8", fontSize: "0.875rem", textAlign: "center", lineHeight: 1.6 }}>
-          Permanently delete the request for <strong style={{ color: "#e2e8f0" }}>{request.recipientName}</strong>?
+        <p className="m-0 mb-6 text-slate-400 text-[0.875rem] text-center leading-relaxed">
+          Permanently delete the request for <strong className="text-slate-200">{request.recipientName}</strong>?
           This cannot be undone.
         </p>
-        <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+        <div className="flex gap-2.5 justify-center">
           <button onClick={onCancel} disabled={loading}
-            style={{ padding: "9px 22px", borderRadius: 10, border: "1px solid rgba(148,163,184,0.18)", background: "rgba(255,255,255,0.04)", color: "#94a3b8", fontSize: "0.875rem", fontWeight: 600, cursor: "pointer" }}>
+            className="px-[22px] py-[9px] rounded-[10px] border border-slate-400/20 bg-white/5 text-slate-400 text-[0.875rem] font-semibold cursor-pointer transition-colors hover:bg-white/10">
             Cancel
           </button>
           <button onClick={onConfirm} disabled={loading}
-            style={{ padding: "9px 22px", borderRadius: 10, border: "1px solid rgba(239,68,68,0.4)", background: "rgba(239,68,68,0.18)", color: "#f87171", fontSize: "0.875rem", fontWeight: 700, cursor: loading ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 7, opacity: loading ? 0.7 : 1 }}>
-            {loading ? <><div style={{ width: 13, height: 13, border: "2px solid rgba(248,113,113,0.3)", borderTopColor: "#f87171", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} /> Deleting…</> : <><Trash2 size={14} /> Delete</>}
+            className={`flex items-center gap-1.5 px-[22px] py-[9px] rounded-[10px] border border-red-500/40 bg-red-500/20 text-red-400 text-[0.875rem] font-bold transition-all ${loading ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer hover:bg-red-500/30'}`}>
+            {loading ? <><div className="w-[13px] h-[13px] border-2 border-red-400/30 border-t-red-400 rounded-full animate-[spin_0.7s_linear_infinite]" /> Deleting…</> : <><Trash2 size={14} /> Delete</>}
           </button>
         </div>
       </div>
@@ -336,10 +297,9 @@ export default function AllDonationRequestsPage() {
 
   if (sessionLoading || !user) {
     return (
-      <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#94a3b8", padding: "60px 24px" }}>
-        <div style={{ width: 22, height: 22, border: "2.5px solid rgba(148,163,184,0.2)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+      <div className="flex items-center gap-3 text-slate-400 py-[60px] px-6">
+        <div className="w-[22px] h-[22px] border-[2.5px] border-slate-400/20 border-t-red-500 rounded-full animate-[spin_0.8s_linear_infinite]" />
         <span>Loading…</span>
-        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -351,21 +311,11 @@ export default function AllDonationRequestsPage() {
     const c = STATUS_COLORS[val];
     const count = val === "all" ? requests.length : requests.filter((r) => r.status === val).length;
     return (
-      <button onClick={() => handleFilter(val)} style={{
-        display: "inline-flex", alignItems: "center", gap: 6,
-        padding: "6px 13px", borderRadius: 8,
-        border: isActive ? (c ? `1px solid ${c.border}` : "1px solid rgba(239,68,68,0.5)") : "1px solid rgba(148,163,184,0.15)",
-        background: isActive ? (c ? c.bg : "rgba(239,68,68,0.15)") : "rgba(255,255,255,0.03)",
-        color: isActive ? (c ? c.text : "#f87171") : "#94a3b8",
-        fontWeight: isActive ? 700 : 500, fontSize: "0.82rem", cursor: "pointer",
-        transition: "all 0.15s ease", textTransform: "capitalize",
-      }}>
+      <button onClick={() => handleFilter(val)} className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg border text-[0.82rem] font-medium cursor-pointer transition-all duration-150 capitalize ${isActive ? (c ? `${c.bg} border-[${c.border}] ${c.text}` : 'bg-red-500/15 border-red-500/50 text-red-400 font-bold') : 'bg-white/5 border-slate-400/15 text-slate-400 hover:bg-white/10'}`}>
         {val === "all" ? "All" : (STATUS_COLORS[val]?.label ?? val)}
-        <span style={{
-          fontSize: "0.7rem", fontWeight: 700, borderRadius: 9999, padding: "1px 7px",
-          background: isActive ? "rgba(255,255,255,0.15)" : "rgba(148,163,184,0.12)",
-          color: isActive ? (c ? c.text : "#f87171") : "#64748b",
-        }}>{count}</span>
+        <span className={`text-[0.7rem] font-bold rounded-full px-2 py-[1px] ${isActive ? (c ? `${c.text} bg-white/15` : 'text-red-400 bg-white/15') : 'text-slate-500 bg-slate-400/10'}`}>
+          {count}
+        </span>
       </button>
     );
   };
@@ -373,32 +323,25 @@ export default function AllDonationRequestsPage() {
   // ── Render ──────────────────────────────────────────────────────────────────
 
   return (
-    <div style={{ padding: "4px 0 40px", color: "#f1f5f9", fontFamily: "'Inter','Outfit',sans-serif" }}>
+    <div className="pt-1 pb-10 text-slate-100 font-sans">
       <style>{`
-        @keyframes spin   { to { transform: rotate(360deg); } }
         @keyframes dropIn { from { opacity:0; transform:translateY(-6px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
       `}</style>
 
       {/* Delete modal */}
       {mounted && <DeleteModal request={deleteTarget} onConfirm={handleDeleteConfirm} onCancel={() => setDeleteTarget(null)} loading={deleteLoading} />}
 
       {/* ── Header ── */}
-      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 14, marginBottom: 28 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <div style={{
-            width: 42, height: 42, borderRadius: 12,
-            background: "linear-gradient(135deg, rgba(239,68,68,0.25), rgba(220,38,38,0.15))",
-            border: "1px solid rgba(239,68,68,0.3)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-          }}>
-            <Droplets size={22} color="#f87171" />
+      <div className="flex items-start justify-between flex-wrap gap-3.5 mb-7">
+        <div className="flex items-center gap-3">
+          <div className="w-[42px] h-[42px] rounded-xl bg-[linear-gradient(135deg,rgba(239,68,68,0.25),rgba(220,38,38,0.15))] border border-red-500/30 flex items-center justify-center">
+            <Droplets size={22} className="text-red-400" />
           </div>
           <div>
-            <h1 style={{ margin: 0, fontSize: "1.5rem", fontWeight: 700, color: "#f1f5f9", letterSpacing: "-0.02em" }}>
+            <h1 className="m-0 text-[1.5rem] font-bold text-slate-100 tracking-[-0.02em]">
               All Donation Requests
             </h1>
-            <p style={{ margin: 0, color: "#64748b", fontSize: "0.83rem", marginTop: 2 }}>
+            <p className="m-0 mt-0.5 text-slate-500 text-[0.83rem]">
               {role === "admin"
                 ? "Manage all blood donation requests across all users."
                 : "View and update donation request statuses."}
@@ -407,13 +350,9 @@ export default function AllDonationRequestsPage() {
         </div>
 
         {/* Role badge */}
-        <div style={{
-          display: "flex", alignItems: "center", gap: 7, padding: "7px 14px",
-          borderRadius: 10, border: role === "admin" ? "1px solid rgba(239,68,68,0.3)" : "1px solid rgba(59,130,246,0.3)",
-          background: role === "admin" ? "rgba(239,68,68,0.08)" : "rgba(59,130,246,0.08)",
-        }}>
-          <ShieldAlert size={14} color={role === "admin" ? "#f87171" : "#60a5fa"} />
-          <span style={{ fontSize: "0.78rem", fontWeight: 700, color: role === "admin" ? "#f87171" : "#60a5fa", textTransform: "capitalize", letterSpacing: "0.04em" }}>
+        <div className={`flex items-center gap-1.5 px-3.5 py-[7px] rounded-[10px] border ${role === "admin" ? 'border-red-500/30 bg-red-500/10' : 'border-blue-500/30 bg-blue-500/10'}`}>
+          <ShieldAlert size={14} className={role === "admin" ? "text-red-400" : "text-blue-400"} />
+          <span className={`text-[0.78rem] font-bold tracking-[0.04em] capitalize ${role === "admin" ? "text-red-400" : "text-blue-400"}`}>
             {role}
           </span>
         </div>
@@ -421,77 +360,64 @@ export default function AllDonationRequestsPage() {
 
       {/* Volunteer restriction notice */}
       {role === "volunteer" && (
-        <div style={{
-          display: "flex", alignItems: "flex-start", gap: 10,
-          padding: "12px 16px", borderRadius: 12, marginBottom: 20,
-          background: "rgba(59,130,246,0.07)", border: "1px solid rgba(59,130,246,0.2)",
-        }}>
-          <ShieldAlert size={16} color="#60a5fa" style={{ flexShrink: 0, marginTop: 1 }} />
-          <p style={{ margin: 0, color: "#94a3b8", fontSize: "0.83rem", lineHeight: 1.5 }}>
-            As a <strong style={{ color: "#60a5fa" }}>Volunteer</strong>, you can view all requests and update donation status only.
+        <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl mb-5 bg-blue-500/10 border border-blue-500/20">
+          <ShieldAlert size={16} className="text-blue-400 shrink-0 mt-[1px]" />
+          <p className="m-0 text-slate-400 text-[0.83rem] leading-[1.5]">
+            As a <strong className="text-blue-400">Volunteer</strong>, you can view all requests and update donation status only.
             Editing, deleting, and other actions are restricted to admins.
           </p>
         </div>
       )}
 
       {/* ── Card ── */}
-      <div style={{
-        background: "rgba(15,23,42,0.7)",
-        border: "1px solid rgba(148,163,184,0.1)",
-        borderRadius: 18, padding: "20px",
-        backdropFilter: "blur(12px)",
-        display: "flex", flexDirection: "column", gap: 16,
-      }}>
+      <div className="bg-slate-900/70 border border-slate-400/10 rounded-[18px] p-5 backdrop-blur-md flex flex-col gap-4">
 
         {/* Toolbar */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#e2e8f0" }}>
-            <Droplets size={17} color="#ef4444" />
-            <span style={{ fontWeight: 600, fontSize: "0.95rem" }}>
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div className="flex items-center gap-2 text-slate-200">
+            <Droplets size={17} className="text-red-500" />
+            <span className="font-semibold text-[0.95rem]">
               {filtered.length} request{filtered.length !== 1 ? "s" : ""}
             </span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 7, flexWrap: "wrap" }}>
-            <Filter size={13} color="#64748b" />
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <Filter size={13} className="text-slate-500" />
             {STATUS_FILTERS.map((val) => <FilterPill key={val} val={val} />)}
           </div>
         </div>
 
         {/* Loading */}
         {loading && (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, color: "#94a3b8", padding: "60px 0" }}>
-            <div style={{ width: 36, height: 36, border: "3px solid rgba(148,163,184,0.15)", borderTopColor: "#ef4444", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+          <div className="flex flex-col items-center gap-3.5 text-slate-400 py-15">
+            <div className="w-9 h-9 border-[3px] border-slate-400/15 border-t-red-500 rounded-full animate-[spin_0.8s_linear_infinite]" />
             <span>Loading requests…</span>
           </div>
         )}
 
         {/* Error */}
         {!loading && error && (
-          <div style={{ textAlign: "center", color: "#f87171", padding: "40px 0" }}>⚠ {error}</div>
+          <div className="text-center text-red-400 py-10">⚠ {error}</div>
         )}
 
         {/* Table */}
         {!loading && !error && (
-          <div style={{ overflowX: "auto", borderRadius: 14, border: "1px solid rgba(148,163,184,0.1)" }}>
-            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 860, fontSize: "0.875rem" }}>
+          <div className="overflow-x-auto rounded-[14px] border border-slate-400/10">
+            <table className="w-full border-collapse min-w-[860px] text-[0.875rem]">
               <thead>
-                <tr style={{ background: "rgba(15,23,42,0.8)", borderBottom: "1px solid rgba(148,163,184,0.12)" }}>
+                <tr className="bg-slate-900/80 border-b border-slate-400/10">
                   {["Recipient", "Requester", "Blood", "Location", "Date & Time", "Status", "Actions"].map((h) => (
-                    <th key={h} style={{
-                      padding: "13px 16px", textAlign: "left",
-                      color: "#64748b", fontWeight: 600,
-                      fontSize: "0.72rem", letterSpacing: "0.06em",
-                      textTransform: "uppercase", whiteSpace: "nowrap",
-                    }}>{h}</th>
+                    <th key={h} className="p-[13px_16px] text-left text-slate-500 font-semibold text-[0.72rem] tracking-[0.06em] uppercase whitespace-nowrap">
+                      {h}
+                    </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {pageRows.length === 0 ? (
                   <tr>
-                    <td colSpan={7} style={{ padding: "56px 16px", textAlign: "center", color: "#475569" }}>
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10 }}>
-                        <Droplets size={32} color="rgba(148,163,184,0.2)" />
+                    <td colSpan={7} className="p-[56px_16px] text-center text-slate-600">
+                      <div className="flex flex-col items-center gap-2.5">
+                        <Droplets size={32} className="text-slate-500/30" />
                         <span>
                           {filter === "all"
                             ? "No donation requests found."
@@ -508,59 +434,53 @@ export default function AllDonationRequestsPage() {
                   return (
                     <React.Fragment key={id}>
                       <tr
-                        style={{
-                          borderBottom: "1px solid rgba(148,163,184,0.07)",
-                          background: idx % 2 === 0 ? "rgba(15,23,42,0.4)" : "rgba(15,23,42,0.25)",
-                          transition: "background 0.15s",
-                        }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(30,41,59,0.8)")}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = idx % 2 === 0 ? "rgba(15,23,42,0.4)" : "rgba(15,23,42,0.25)")}
+                        className={`border-b border-slate-400/[0.07] transition-colors hover:bg-slate-800/80 ${idx % 2 === 0 ? 'bg-slate-900/40' : 'bg-slate-900/25'}`}
                       >
                         {/* Recipient */}
-                        <td style={{ padding: "13px 16px" }}>
-                          <span style={{ color: "#e2e8f0", fontWeight: 600, display: "block" }}>{req.recipientName ?? "—"}</span>
-                          <span style={{ color: "#64748b", fontSize: "0.73rem" }}>{req.hospitalName ?? ""}</span>
+                        <td className="p-[13px_16px]">
+                          <span className="text-slate-200 font-semibold block">{req.recipientName ?? "—"}</span>
+                          <span className="text-slate-500 text-[0.73rem]">{req.hospitalName ?? ""}</span>
                         </td>
 
                         {/* Requester (admin extra info) */}
-                        <td style={{ padding: "13px 16px" }}>
-                          <span style={{ color: "#94a3b8", fontSize: "0.82rem", display: "block" }}>{req.requesterName ?? "—"}</span>
-                          <span style={{ color: "#64748b", fontSize: "0.73rem" }}>{req.requesterEmail ?? ""}</span>
+                        <td className="p-[13px_16px]">
+                          <span className="text-slate-400 text-[0.82rem] block">{req.requesterName ?? "—"}</span>
+                          <span className="text-slate-500 text-[0.73rem]">{req.requesterEmail ?? ""}</span>
                         </td>
 
                         {/* Blood group */}
-                        <td style={{ padding: "13px 16px" }}>
+                        <td className="p-[13px_16px]">
                           <BloodBadge group={req.bloodGroup ?? "—"} />
                         </td>
 
                         {/* Location */}
-                        <td style={{ padding: "13px 16px" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 5, color: "#94a3b8", fontSize: "0.85rem" }}>
-                            <MapPin size={12} color="#64748b" />
+                        <td className="p-[13px_16px]">
+                          <div className="flex items-center gap-1.5 text-slate-400 text-[0.85rem]">
+                            <MapPin size={12} className="text-slate-500" />
                             {[req.recipientDistrict, req.recipientUpazila].filter(Boolean).join(", ") || "—"}
                           </div>
                         </td>
 
                         {/* Date & Time */}
-                        <td style={{ padding: "13px 16px" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 5, color: "#94a3b8", whiteSpace: "nowrap" }}>
-                            <CalendarDays size={12} color="#64748b" />
+                        <td className="p-[13px_16px]">
+                          <div className="flex items-center gap-1.5 text-slate-400 whitespace-nowrap">
+                            <CalendarDays size={12} className="text-slate-500" />
                             {formatDate(req.donationDate)}
                           </div>
                           {req.donationTime && (
-                            <div style={{ display: "flex", alignItems: "center", gap: 5, color: "#64748b", fontSize: "0.73rem", marginTop: 2 }}>
+                            <div className="flex items-center gap-1.5 text-slate-500 text-[0.73rem] mt-0.5">
                               <Clock size={11} />{req.donationTime}
                             </div>
                           )}
                         </td>
 
                         {/* Status */}
-                        <td style={{ padding: "13px 16px" }}>
+                        <td className="p-[13px_16px]">
                           <StatusBadge status={req.status ?? "pending"} />
                         </td>
 
                         {/* Actions */}
-                        <td style={{ padding: "13px 16px" }}>
+                        <td className="p-[13px_16px]">
                           <ActionDropdown
                             request={req}
                             role={role}
@@ -575,21 +495,21 @@ export default function AllDonationRequestsPage() {
 
                       {/* Donor info row — inprogress only */}
                       {isInProgress && (req.donorName || req.donorEmail) && (
-                        <tr style={{ background: "rgba(59,130,246,0.05)", borderBottom: "1px solid rgba(148,163,184,0.07)" }}>
-                          <td colSpan={7} style={{ padding: "9px 20px" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap" }}>
-                              <span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#60a5fa", letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                        <tr className="bg-blue-500/5 border-b border-slate-400/[0.07]">
+                          <td colSpan={7} className="p-[9px_20px]">
+                            <div className="flex items-center gap-5 flex-wrap">
+                              <span className="text-[0.7rem] font-bold text-blue-400 tracking-[0.06em] uppercase">
                                 Donor Info
                               </span>
                               {req.donorName && (
-                                <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#94a3b8", fontSize: "0.82rem" }}>
-                                  <User2 size={12} color="#60a5fa" />
-                                  <span style={{ color: "#e2e8f0", fontWeight: 600 }}>{req.donorName}</span>
+                                <div className="flex items-center gap-1.5 text-slate-400 text-[0.82rem]">
+                                  <User2 size={12} className="text-blue-400" />
+                                  <span className="text-slate-200 font-semibold">{req.donorName}</span>
                                 </div>
                               )}
                               {req.donorEmail && (
-                                <div style={{ display: "flex", alignItems: "center", gap: 6, color: "#94a3b8", fontSize: "0.82rem" }}>
-                                  <Mail size={12} color="#60a5fa" />
+                                <div className="flex items-center gap-1.5 text-slate-400 text-[0.82rem]">
+                                  <Mail size={12} className="text-blue-400" />
                                   <span>{req.donorEmail}</span>
                                 </div>
                               )}
@@ -607,29 +527,25 @@ export default function AllDonationRequestsPage() {
 
         {/* Pagination */}
         {!loading && !error && totalPages > 1 && (
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 8, padding: "4px 0" }}>
-            <span style={{ color: "#64748b", fontSize: "0.8rem" }}>
+          <div className="flex items-center justify-between flex-wrap gap-2 py-1">
+            <span className="text-slate-500 text-[0.8rem]">
               Page {safePage} of {totalPages} · {filtered.length} total
             </span>
-            <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+            <div className="flex gap-1.5 items-center">
               <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={safePage === 1}
-                style={{ padding: "5px 10px", borderRadius: 8, border: "1px solid rgba(148,163,184,0.12)", background: "transparent", color: safePage === 1 ? "rgba(148,163,184,0.3)" : "#94a3b8", cursor: safePage === 1 ? "not-allowed" : "pointer" }}>
+                className={`px-2.5 py-1.5 rounded-lg border border-slate-400/10 bg-transparent transition-colors ${safePage === 1 ? 'text-slate-500/30 cursor-not-allowed' : 'text-slate-400 cursor-pointer hover:bg-white/5'}`}>
                 <ChevronLeft size={15} />
               </button>
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => {
                 const isActive = p === safePage;
                 return (
-                  <button key={p} onClick={() => setPage(p)} style={{
-                    width: 32, height: 32, borderRadius: 8,
-                    border: isActive ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(148,163,184,0.12)",
-                    background: isActive ? "rgba(239,68,68,0.15)" : "transparent",
-                    color: isActive ? "#f87171" : "#94a3b8",
-                    fontWeight: isActive ? 700 : 500, fontSize: "0.82rem", cursor: "pointer", transition: "all 0.15s",
-                  }}>{p}</button>
+                  <button key={p} onClick={() => setPage(p)} className={`w-8 h-8 rounded-lg border text-[0.82rem] cursor-pointer transition-all duration-150 ${isActive ? 'border-red-500/50 bg-red-500/15 text-red-400 font-bold' : 'border-slate-400/10 bg-transparent text-slate-400 font-medium hover:bg-white/5'}`}>
+                    {p}
+                  </button>
                 );
               })}
               <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={safePage === totalPages}
-                style={{ padding: "5px 10px", borderRadius: 8, border: "1px solid rgba(148,163,184,0.12)", background: "transparent", color: safePage === totalPages ? "rgba(148,163,184,0.3)" : "#94a3b8", cursor: safePage === totalPages ? "not-allowed" : "pointer" }}>
+                className={`px-2.5 py-1.5 rounded-lg border border-slate-400/10 bg-transparent transition-colors ${safePage === totalPages ? 'text-slate-500/30 cursor-not-allowed' : 'text-slate-400 cursor-pointer hover:bg-white/5'}`}>
                 <ChevronRight size={15} />
               </button>
             </div>
