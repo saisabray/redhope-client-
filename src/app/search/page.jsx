@@ -22,7 +22,7 @@ const selectClasses = `w-full px-4 py-3 rounded-xl border border-slate-400/20 bg
 
 // ── Donor Card ────────────────────────────────────────────────────────────────
 
-function DonorCard({ donor }) {
+function DonorCard({ donor, className = "" }) {
   const bloodColor = BLOOD_COLORS[donor.bloodGroup] ?? "#f87171";
   const initials   = donor.name
     ? donor.name.split(" ").map((n) => n[0]).slice(0, 2).join("").toUpperCase()
@@ -33,7 +33,7 @@ function DonorCard({ donor }) {
 
   return (
     <div 
-      className="relative flex flex-col gap-4 p-[24px_22px] rounded-[18px] bg-slate-900/75 border border-slate-400/10 backdrop-blur-md overflow-hidden transition-all duration-200 hover:-translate-y-[3px] animate-[fadeUp_0.3s_ease_both]"
+      className={`relative flex flex-col gap-4 p-[24px_22px] rounded-[18px] bg-slate-900/75 border border-slate-400/10 backdrop-blur-md overflow-hidden transition-all duration-200 hover:-translate-y-[3px] animate-[fadeUp_0.3s_ease_both] ${className}`}
       style={{
         "--hover-border": `${bloodColor}55`,
         "--hover-shadow": `0 12px 40px rgba(0,0,0,0.4), 0 0 0 1px ${bloodColor}22`
@@ -352,10 +352,10 @@ export default function SearchPage() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-[repeat(auto-fill,minmax(290px,1fr))] gap-[18px]">
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(300px,1fr))] gap-5">
                 {results.map((donor, i) => (
-                  <div key={donor._id?.$oid ?? donor._id ?? i} style={{ animationDelay: `${i * 0.04}s` }}>
-                    <DonorCard donor={donor} />
+                  <div key={donor._id?.$oid ?? donor._id ?? i} className="h-full" style={{ animationDelay: `${i * 0.04}s` }}>
+                    <DonorCard donor={donor} className="h-full" />
                   </div>
                 ))}
               </div>

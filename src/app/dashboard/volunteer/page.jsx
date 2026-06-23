@@ -1,9 +1,9 @@
-const page = () => {
+import DashboardOverview from "@/components/DashboardOverview";
+
+const VolunteerPage = () => {
   return (
-    <div>
-      <h1>Volunteer Dashboard</h1>
-    </div>
+    <DashboardOverview roleLabel="Volunteer" />
   );
 };
 
-export default page;
+export default VolunteerPage;

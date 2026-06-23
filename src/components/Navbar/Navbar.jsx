@@ -47,6 +47,8 @@ export default function Navbar() {
             alt="RedHope Logo"
             width={150}
             height={150}
+            priority
+            className="w-[150px] h-auto"
           />
         </NextLink>
 

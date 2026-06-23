@@ -1,10 +1,8 @@
-import { UserTable } from "@/components/dashboard/Admin/UserTable";
+import DashboardOverview from "@/components/DashboardOverview";
 
 const AdminPage = () => {
   return (
-    <div>
-      <p>Hello Admin Page here</p>
-    </div>
+    <DashboardOverview roleLabel="Admin" />
   );
 };
 

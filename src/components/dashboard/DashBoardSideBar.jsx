@@ -129,7 +129,10 @@ function NavContent({ pathname, navItems, meta, user, isPending, onNavigate, com
       <div>
         <div className="h-px bg-white/10 mt-4 mb-2.5" />
         <button
-          onClick={() => authClient.signOut()}
+          onClick={async () => {
+            await authClient.signOut();
+            window.location.href = "/";
+          }}
           aria-label="Sign out"
           className="flex items-center gap-2.5 w-full px-[14px] py-[10px] rounded-lg border-none bg-transparent text-slate-500 text-[13.5px] font-medium cursor-pointer transition-colors duration-150 hover:bg-red-500/10 hover:text-red-400 group"
         >
