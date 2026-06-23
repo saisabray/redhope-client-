@@ -188,13 +188,15 @@ export default function FundingClient({ initialFundings = [] }) {
                           <td className="py-5 px-8 text-right text-[14px] text-slate-400 font-medium">
                             <div className="flex items-center justify-end gap-2.5">
                               <CalendarDays size={14} className="text-slate-500" />
-                              {fund.createdAt 
-                                ? new Date(fund.createdAt).toLocaleDateString('en-US', {
-                                    month: 'short',
-                                    day: 'numeric',
-                                    year: 'numeric'
-                                  })
-                                : "N/A"}
+                              <span suppressHydrationWarning>
+                                {fund.createdAt 
+                                  ? new Date(fund.createdAt).toLocaleDateString('en-US', {
+                                      month: 'short',
+                                      day: 'numeric',
+                                      year: 'numeric'
+                                    })
+                                  : "N/A"}
+                              </span>
                             </div>
                           </td>
                         </tr>

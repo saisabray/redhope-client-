@@ -79,7 +79,7 @@ export default function DashboardOverview({ roleLabel }) {
           <div className="flex-1">
             <div className="flex items-center gap-2 mb-1">
               <Sparkles size={16} className="text-amber-400" />
-              <span className="text-[0.85rem] text-amber-400 font-semibold tracking-[0.04em]">
+              <span suppressHydrationWarning className="text-[0.85rem] text-amber-400 font-semibold tracking-[0.04em]">
                 {greeting}
               </span>
             </div>

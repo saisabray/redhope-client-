@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
@@ -58,7 +58,7 @@ function SelectWrap({ children, disabled }) {
 
 // ── Main Page ────────────────────────────────────────────────────────────────
 
-export default function CreateDonationRequestPage() {
+function CreateDonationRequestContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get("edit"); // present when editing
@@ -480,6 +480,7 @@ export default function CreateDonationRequestPage() {
             {/* Donation Date */}
             <Field icon={CalendarDays} label="Donation Date">
               <input
+                suppressHydrationWarning
                 id="donationDate"
                 type="date"
                 min={today}
@@ -562,5 +563,18 @@ export default function CreateDonationRequestPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function CreateDonationRequestPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center gap-3 text-slate-400 py-[60px] px-6">
+        <div className="w-[22px] h-[22px] border-[2.5px] border-slate-400/20 border-t-red-500 rounded-full animate-[spin_0.8s_linear_infinite]" />
+        <span>Loading…</span>
+      </div>
+    }>
+      <CreateDonationRequestContent />
+    </Suspense>
   );
 }
